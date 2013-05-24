@@ -31,6 +31,19 @@ git submodule update
 2. @TODO What's the actual process from here? Edit the submodule?
 
 
+## Issues ##
+
+@TODO: Explanations below are off the cuff and need refinement.
+
+Need to talk about the consequences and delays in how changes to this repo affect script runs in projects that include it.
+
+For example, take a project that has already included this repo as a submodule but hasn't been updated for a while (and we've made changes to this bin repo). When that project runs `bin/update` to update the staging copy of the app, it will be the "stale" version of bin/update that executes. That version of bin/update will eventually trigger a `git submodule update`, which might pull in changes to _itself_-- but too late for the current runtime. 
+
+The bigger issue is that if a change to a bin/ script happens DURING the run of the stale `update` script as a result of the included `git submodules update` call, and the changes to that dependency script are incompatible with the stale version of `update`, the run will fail in unpredictable ways.
+
+The script really needs a way of updating JUST the CakePHP-Shell-Scripts submodule **first** (and no other submodules that probably expect the codebase to be changing along with it), and if it detects any changes have been applied, exits and re-calls the newer version of itself. Seems like there is a potential for an infinite loop here if the change detection is done wrong though.
+
+
 ## Key Scripts ##
 
 ### bin/init-repo ###
