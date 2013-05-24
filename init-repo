@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Initializes a freshly cloned copy of the project for local usage.
 
 #---------------------------------------------------------------------
 usage ()
@@ -7,7 +6,7 @@ usage ()
 	cat <<EOT
 
 ${0##*/}  
-    Sets a freshly-cloned copy of a project for local use. The script 
+    Sets up a freshly-cloned copy of a project for local use. The script 
     is designed to be portable, without modification, between projects 
     that may or may not implement various features (like migrations or 
     the seedshell) and call those components only if they are found to 
