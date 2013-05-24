@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Designed to perform all the necessary steps to update a local 
+    copy of the project from the remote repo, which is assumed to 
+    be "ahead" of the local copy. Mainly intended for use in 
+    staging and production environments to ensure that code "pushes" 
+    are performed consistently every time. Should be run from the 
+    project root folder.
+
+Usage:
+    bin/${0##*/} [tag|branch|sha|ref] [dev|prod|staging] [user] [group]
+
+	$1 = The new commit to update to. Default: 'origin/master'
+	$2 = The local config file "environment" to use. Default: 'prod'
+	$3 = The local user to associate the project with. Default: owner of ./
+	$4 = The local group to associate the project with. Default: group of ./
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+echo "## Starting update process."
+
+# Set variables.
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+BIN_DIR="$DIR/bin"
+CONFIG_DIR="$DIR/Config"
+MIGRATION_DIR="$CONFIG_DIR/Migration"
+SLEEP_TIME=10
+DEFAULT_DBUPDATES_FILE="$CONFIG_DIR/sql/db_updates.sql"
+
+if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
+	DB_UPDATES_METHOD='migrations'
+elif [ -e "$DEFAULT_DBUPDATES_FILE" ]; then
+	DB_UPDATES_METHOD='db_updates'
+else
+	DB_UPDATES_METHOD='none'
+fi
+
+# Input processing.
+if [ $1 ]; then
+	ARG_NEWCOMMIT=$1
+else
+	ARG_NEWCOMMIT="origin/master"
+fi
+
+if [ $2 ]; then
+	ARG_APPENV="$2"
+else
+	ARG_APPENV="prod"
+fi
+
+if [ $3 ]; then
+	ARG_OWNER=$3
+else
+	ARG_OWNER=""
+fi
+
+if [ $4 ]; then
+	ARG_GROUP=$4
+else
+	ARG_GROUP=""
+fi
+
+
+# Check for local changes that would cause a merge (without -f) will fail later.
+$BIN_DIR/git-localchanges
+if [ $? -gt 0 ]; then
+	echo "!! You will need to resolve any differences between the working copy  !!"
+	echo "!! and the active commit before proceeding with the update.           !!"
+	echo ""
+	exit 1
+fi
+
+
+# Backup the live DB.
+$BIN_DIR/db-backup
+echo ''
+echo "## Sleeping for ${SLEEP_TIME} seconds to give you time to think about if the "
+echo "##   backup size list above is appropriate. (Press Ctrl-C to abort the update)..."
+echo ''
+sleep ${SLEEP_TIME}
+
+
+# Save the "current" commit for later.
+EXISTINGCOMMIT=$( git rev-parse HEAD )
+EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
+echo "## Current commit is $EXISTINGBRANCH ($EXISTINGCOMMIT)";
+
+
+# Update repository.
+echo "## Pulling changes from remote repo.";
+git fetch --tags
+git fetch origin
+
+
+# Apply database updates, one way or another.
+if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
+	echo "## Deferring database migrations until after merge."
+elif [ "$DB_UPDATES_METHOD" = 'db_updates' ]; then
+	# Show manual pending DB updates to user. (Or use possibly use bin/db-apply-updates here to execute the SQL against the DB automatically, 
+	# which should be fairly recoverable if it's wrong [which it can be] considering we have already made a backup.)
+	DB_CHANGES="$( $BIN_DIR/db-show-updates $EXISTINGCOMMIT $ARG_NEWCOMMIT)"
+	if [ -n "$DB_CHANGES" ]; then
+		echo "## There are database updates to apply!"
+		echo '---------'
+		echo ''
+		echo "$DB_CHANGES"
+		echo ''
+		echo '---------'
+		echo ''
+		read -p "Press [ENTER] to continue when these updates have been applied to the local DB."
+	else
+		echo "## No database updates to apply.";
+	fi
+elif [ "$DB_UPDATES_METHOD" = 'none' ]; then
+	echo "## Could not automatically determine database change tracking system."
+	read -p "## Make sure any pending DB changes have been made and press [ENTER] to continue."
+fi
+
+
+
+# This if case should really be looking to see if we're being asked to fast forward on the same branch, or switch to the HEAD of a different branch.
+# if [ "$ARG_NEWCOMMIT" = "origin/master" ]; then
+	echo "## Merging upstream changes from: $ARG_NEWCOMMIT";
+	git merge $ARG_NEWCOMMIT
+# else
+# 	echo "## Checking out new commit: $ARG_NEWCOMMIT";
+# 	git checkout $ARG_NEWCOMMIT
+# fi
+
+
+echo "## New commit is now active:";
+git log -1
+
+
+if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
+	echo "## Applying database migrations."
+	$BIN_DIR/migrations
+fi
+
+# Copy the correct config files into place for this environment.
+$BIN_DIR/set-configs $ARG_APPENV
+
+
+# Load submodules.
+$BIN_DIR/git-submodules
+
+
+# Purge cache folders.
+$BIN_DIR/clear-cache
+
+
+# Set file ownership.
+$BIN_DIR/set-owner ${ARG_OWNER} ${ARG_GROUP}
+
+
+# Set write permissions.
+$BIN_DIR/writedirs
+
+
+echo "## Update process complete.";
+

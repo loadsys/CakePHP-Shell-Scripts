@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Searches the Config/ folder for any files matching the pattern 
+    *.ENV.* and copies them to the same file name minus ".ENV". Should
+    be run from the project root folder.
+    
+    For example, where ENV="prod":
+       Config/core.prod.php -> Config/core.php
+       Config/database.prod.php -> Config/database.php
+
+Usage:
+    bin/${0##*/} <ENV>
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+CONFIG_DIR="$DIR/Config";
+
+# Copy config files in place
+if [ $1 ]; then
+        ARG_ENV=$1;
+else
+        ARG_ENV="prod";
+fi
+
+echo "## Copying config files into place for environment: $ARG_ENV";
+for CFG_FILE in $( ls -1 ${CONFIG_DIR} | grep .${ARG_ENV}. ); do
+	cp -fv ${CONFIG_DIR}/${CFG_FILE} ${CONFIG_DIR}/${CFG_FILE/\.${ARG_ENV}/}
+done

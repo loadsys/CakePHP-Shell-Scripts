@@ -1,0 +1,69 @@
+#!/usr/bin/env php
+<?php
+
+//----------
+function usage()
+{
+	$script = basename(__FILE__);
+	echo <<<EOT
+
+${script}  
+    Uses the Config/database.php file to execute a mysqldump of the 
+    default database into a ZIP file located in a backups/ folder 
+    created in the project root (if necessary). Outputs the ZIP 
+    file's size as a crude verification step. Should be run from 
+    the project root folder.
+
+Usage:
+    bin/${script}
+
+
+EOT;
+
+	exit(0);
+}
+if (isset($argv[1]) && $argv[1] == '-h') {
+	usage();
+}
+
+
+// Set up variables.
+$dir = dirname(dirname(__FILE__));
+$backupDir = $dir . '/backups';
+$dbConfigFile = $dir . '/Config/database.php';
+$date = date('Ymd-His');
+include $dbConfigFile;
+$db = new DATABASE_CONFIG(); 
+
+// Create an appropriate password clause for the command line.
+if (empty($db->default['password'])) {
+	$passClause = '';
+} else {
+	$passClause = ' --password=' . escapeshellcmd($db->default['password']);
+}
+
+// Create the backup directory if it doesn't exist.
+if(!file_exists($backupDir) || !is_dir($backupDir)) {
+	mkdir($backupDir, 0777);
+}
+
+// Build the command lines to execute.
+$sqlFile = $backupDir . "/{$db->default['database']}_{$date}.sql";
+$zipFile = "{$sqlFile}.zip";
+$dumpCmd = "mysqldump --user={$db->default['login']}{$passClause} {$db->default['database']} > {$sqlFile}\n";
+$compressCmd = "zip -jrq8 {$zipFile} {$sqlFile}; rm {$sqlFile}";
+//echo $db->default['database'] . ' ' . $db->default['login'] . ' ' . $db->default['password'] . "\n";
+
+// Execute the commands.
+echo "## Backing up database '{$db->default['database']}' to: {$zipFile}\n";
+system($dumpCmd);
+system($compressCmd);
+echo "## Database backup complete: " . human_filesize(filesize($zipFile)) . PHP_EOL;
+
+//----------
+function human_filesize($bytes, $decimals = 2) {
+  $sz = 'BKMGTP';
+  $factor = floor((strlen($bytes) - 1) / 3);
+  return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
+}
+

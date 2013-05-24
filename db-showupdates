@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Takes at least one git commit SHA hash and compares the 
+    Config/sql/db_updates.sql file in older (non-Migrations) projects 
+    to either the second commit SHA if provided, or the "HEAD" commit. 
+    The output is the difference between the files. Practically, this 
+    will be any SQL commands added to the bottom of the file, 
+    indicating they need to be applied to the local database. Used by 
+    bin/update to warn the user about DB changes before proceeding 
+    with a git pull. Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/} <existing commit SHA> [pending commit SHA]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+SQLFILE="$DIR/Config/sql/db_updates.sql"
+TMP_A="$DIR/tmp/db_updates.a.sql"
+TMP_B="$DIR/tmp/db_updates.b.sql"
+
+#@TODO: Add a -s (silent) flag for db-apply-updates.sh to use to suppress all "for humans" output.
+
+if [ ! -e "$SQLFILE" ]; then
+	echo "## DB updates file ($SQLFILE) was not found. Aborting." >&2
+	exit 1
+fi
+
+if [ -z "$1" ]; then
+	usage
+	# Alternatively, might also be able to default to the active commit:
+	#EXISTING=$( git rev-parse HEAD )
+else
+	EXISTING=$1
+fi
+
+if [ -n "$2" ]; then
+	PENDING=$2
+else
+	PENDING=''
+fi
+
+# Create temp files for comparison.
+git show $EXISTING:$SQLFILE > $TMP_A
+git show $PENDING:$SQLFILE > $TMP_B
+
+# Run the diff and capture the output.
+CHANGES=$( diff --changed-group-format='%>' --unchanged-group-format='' $TMP_A $TMP_B )
+
+# Clean up after ourselves.
+rm -rf $TMP_A $TMP_B
+
+# Display the changes, if any.
+if [ ! -z "$CHANGES" ]; then
+	echo "$CHANGES"
+	exit 0
+else
+	exit 0;  # Does it even make sense to exit with an "error" code for *either* case?
+fi

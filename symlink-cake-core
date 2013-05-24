@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Creates a symlink for the current project to the provided Cake 
+    core as Lib/Cake, provided a real Cake core isn't present. 
+    Overwrites an existing symlink if present. Should be run from 
+    the project root folder.
+
+Usage:
+    bin/${0##*/} </full/path/to/cake_version/lib/Cake>
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Variable initialization.
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+CORE_LINK="$DIR/Lib/Cake"
+
+# Input processing.
+if [ -n "$1" ]; then
+	ARG_CAKECORE=$1
+else
+	usage
+fi
+
+# Make sure the provided argument is at least a valid path.
+if [ ! -e "$ARG_CAKECORE" ]; then
+	echo "!! Provided Cake core path is not valid: ${ARG_CAKECORE}" >&2
+	exit 1
+fi
+
+# If there is already an actual folder in the destination, abort.
+if [ -d ${CORE_LINK} -a ! -L ${CORE_LINK} ]; then
+	echo "## A Cake core *folder* (not a symlink) is already present at: ${CORE_LINK}"
+	exit 0
+fi
+
+# If there is an existing symlink in place, replace it (allows for core version changes/upgrades by calling this script.)
+if [ -L ${CORE_LINK} ]; then
+	echo "## Removing existing symlink pointing at: $( readlink ${CORE_LINK} )"
+	rm -f ${CORE_LINK}
+fi
+
+# Check to make sure the parent directory (Lib/) exists. (New projects might not have it unless there is already a .gitkeep file inside!)
+DIR_PARENT=$( dirname "${CORE_LINK}" )
+		
+if [ ! -d "${DIR_PARENT}" ]; then
+	echo "## Creating missing parent directory: ${DIR_PARENT}"
+	mkdir -p ${DIR_PARENT}
+	# Make sure the parent dir ends up in the repo.
+	touch ${DIR_PARENT}/.gitkeep
+fi
+
+# If we get this far, create the link!
+echo "## Creating link to the provided Cake core at: ${CORE_LINK}"
+ln -s ${ARG_CAKECORE} ${CORE_LINK}

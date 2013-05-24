@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Uses Cake's Config/database.php file to start a command line 
+    mysql session with the correct host, database, user and password.
+    Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+BINDIR="${DIR}/bin"
+
+# Holy yuck, but nothing else works!
+eval $( ${BINDIR}/db-credentials )
+
+CMD="mysql --host=${DB_HOST} --database=${DB_NAME} --user=${DB_USER}"
+PATTERN=" |'"
+
+if [[ ${DB_PASS} =~ ${PATTERN} ]]; then
+	${CMD} -p"${DB_PASS}"
+elif [ -n "${DB_PASS}" ]; then
+	${CMD} -p${DB_PASS}
+else
+	${CMD}
+fi

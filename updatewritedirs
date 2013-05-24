@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Scans the project's directory structure for writeable directories, 
+    and merges what it finds into the writedirs.txt configuration file.
+	Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Relative to the app's Config folder.
+DIRLISTFILE=writedirs.txt
+
+#TODO: In future versions, the script could look for an argument ($1) or an environment variable to control which file to read from instead of the hardcoded value above. This would make it more compatible with the updatewritedirs script.
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
+CONFIG_DIR="$DIR/Config";
+
+# Find any writeable dirs (only root dirs) and append them (for now) to the writedirs.txt file.
+echo "## Locating writable directories within the project folder."
+find $DIR -perm -20 -type d -prune -print | sed "s%^${DIR}/%%" >> $CONFIG_DIR/$DIRLISTFILE
+
+# Then filter out any duplicates. This has the effect of preserving any existing "placeholder" entries previously in the file, but that weren't actually found in the current app dir.
+echo "## Sorting and filtering the writable directory list to remove duplicates."
+sort $CONFIG_DIR/$DIRLISTFILE | uniq > $CONFIG_DIR/$DIRLISTFILE.tmp
+rm $CONFIG_DIR/$DIRLISTFILE
+mv $CONFIG_DIR/$DIRLISTFILE.tmp $CONFIG_DIR/$DIRLISTFILE

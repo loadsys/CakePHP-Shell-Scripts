@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Recursively renames any files named "empty" to '.gitkeep". If you do 
+    not want to act on the entire git root directory, pass in a local 
+    path as the first argument. Should be run from the project root 
+    folder.
+
+Usage:
+    bin/${0##*/} [local/path]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+if [ -n "$1" ]; then
+	DIR=$1
+else
+	DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
+fi
+find $DIR -name "empty" -exec sh -c 'mv "$0" "${0%empty}.gitkeep"' {} \;

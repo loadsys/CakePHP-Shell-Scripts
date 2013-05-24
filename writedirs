@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#
+# 
+#
+#  beporter@users.sourceforge.net
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Looks for a local file called writedirs.txt and attempts to make 
+    the list of directories it contains writable recursively. If it 
+    fails to find or read that file, or if it is empty, it will fall 
+    back to setting the tmp/ dir as writeable. Should be run from 
+    the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Relative to the app's Config folder.
+DIRLISTFILE=writedirs.txt
+
+#TODO: In future versions, the script could look for an argument ($1) or an environment variable to control which file to read from instead of the hardcoded value above. This would make it more compatible with the updatewritedirs script.
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
+CONFIG_DIR="$DIR/Config";
+
+if [ -s $CONFIG_DIR/$DIRLISTFILE ]
+then
+	echo "## Processing ${DIRLISTFILE} for writable directories."
+	while read F ; do
+		#echo $F  # Debugging.
+		chmod -R 777 $DIR/$F
+	done < $CONFIG_DIR/$DIRLISTFILE
+else
+	echo "## Config file ${DIRLISTFILE} not found. Creating it and generating a list of writable directories."
+	# The writedirs.txt file is empty or can't be read. At least set the tmp dir as writeable.
+	chmod -R 777 $DIR/tmp
+	
+	# Also try to auto-correct the situation by creating the writedirs.txt file and populating it with the existing writeable dirs in the folder structure.
+	touch $CONFIG_DIR/$DIRLISTFILE
+	chmod -R 777 $CONFIG_DIR/$DIRLISTFILE
+	$DIR/bin/updatewritedirs
+fi

@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Convenience wrapper to determine if there are any uncomitted changes 
+    to the local working copy that would disrupt a git pull. Exits 0 
+    if the working directory is clean. If there are differences, prints 
+    a summary of the uncommited changes and exits 1.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+LOCAL_CHANGES=$( git diff --stat )
+if [ -n "$LOCAL_CHANGES" ]; then
+	echo "## There are local uncommitted changes to the repo!"
+	echo '---------'
+	echo ''
+	echo "$LOCAL_CHANGES"
+	echo ''
+	echo '---------'
+	echo '';
+	exit 1
+else
+	echo "## Local working dir matches repo."
+	exit 0
+fi

@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Provides a consistent way of fetching common Cake folder paths, 
+    even when they differ between Cake versions. Used by all of the 
+    other scripts to set paths that are correct for the project's 
+    current Cake version. 
+    
+    @TODO: Do something neat to determine the Cake version and paths. 
+    Maybe cheat by partially bootstraping Cake itself and getting 
+    the PHP define()s???
+    
+    Takes a single argument representing a "shortcut" name for the 
+    path (really a lookup key). Returns the proper RELATIVE path 
+    for the current project.
+    
+    For example:
+    	bin/${0##*/} config -> app/config/ (for a Cake 1.x project)
+    	                    -> Config/ (for a Cake 2.x project)
+    
+    Other scripts can access this information like so:
+    	CONFIG_DIR=$( bin/paths config )
+
+Usage:
+    bin/${0##*/} [local/path]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+echo "!! @TODO: Write the script!"
+exit 1

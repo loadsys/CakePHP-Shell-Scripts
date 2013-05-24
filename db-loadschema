@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Determines the active schema management tool in use (CakeDC 
+    Migrations plugin, Cake Schema Shell, or old-fashioned schema.sql 
+    file) and attempts to load the schema into the default database.
+    Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Variable initialization.
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+BIN_DIR="$DIR/bin"
+CONFIG_DIR="$DIR/Config"
+MIGRATION_DIR="$CONFIG_DIR/Migration"
+CAKE_SHELL="$DIR/Console/cake"
+DEFAULT_SCHEMAPHP="$CONFIG_DIR/Schema/schema.php"
+DEFAULT_SCHEMASQL="$CONFIG_DIR/sql/schema.sql"
+
+
+if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
+	echo "## Running all available migrations."
+	$CAKE_SHELL Migrations.migration run all -p Migrations
+	$CAKE_SHELL Migrations.migration run all -p Queue
+	$BIN_DIR/migrations
+elif [ -e "$DEFAULT_SCHEMAPHP" ]; then
+	echo "## Found a Schema description file at: ${DEFAULT_SCHEMAPHP}"
+	echo 'Would you like to try loading the schema into the database? [y/n]:'
+	read ANSWER
+	if [ $ANSWER == 'y' ]; then
+		echo "@TODO: Not implemented yet! Need to call something like: \$DIR/Console/cake schema update -name \${DIR}"
+	fi
+elif [ -e "$DEFAULT_SCHEMASQL" ]; then
+	echo "## Found a schema SQL file at: ${DEFAULT_SCHEMASQL}"
+	echo 'Would you like to try loading this file into the database? [y/n]:'
+	read ANSWER
+	if [ $ANSWER == 'y' ]; then
+		echo "@TODO: Not implemented yet! Need to load bin/db-credentials, then construct a mysql command line like: mysql --user=USER ... DBNAME < SQLFILE"
+	fi
+else
+	echo "## No Migrations or schema files are present. You will have to locate and load the database schema yourself."
+	exit 1
+fi

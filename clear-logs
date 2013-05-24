@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Clears files from Cake's logs directory. Really only needed to
+    recover disk space from aggressive logs. Should be run 
+    from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+
+echo "## Clearing logs.";
+rm -f $DIR/tmp/logs/*

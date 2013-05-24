@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Sets the filesystem owner and group recursively from the project 
+    root folder. Uses the provided command line arguments if present, 
+    otherwise defaults to the owner and group set for the project 
+    root folder. Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/} [owner] [group]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+
+# Input processing.
+if [ -n "$1" ]; then
+	ARG_OWNER=$1
+else
+    # This works around the scripts being run elevated via `sudo`.
+	ARG_OWNER="$( ls -l ${DIR}/.. | grep $( basename $( pwd ) ) | awk '{ print $3 }' )"
+fi
+
+if [ -n "$2" ]; then
+    ARG_GROUP=$2;
+else
+	ARG_GROUP="$( ls -l ${DIR}/.. | grep $( basename $( pwd ) ) | awk '{ print $4 }' )"
+fi
+
+# Make the changes.
+echo "## Setting file ownership for root folder to: ${ARG_OWNER}:${ARG_GROUP}";
+chown -R ${ARG_OWNER}:${ARG_GROUP} $DIR

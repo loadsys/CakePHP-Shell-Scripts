@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Convenience wrapper to initialize and update all git submodules. 
+    Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+echo "## Updating git submodules."
+git submodule update --init --recursive
