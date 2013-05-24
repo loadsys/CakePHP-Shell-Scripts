@@ -12,8 +12,10 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 The scripts all expect to live together in a subfolder of your project root named `bin/`. To install them, navigate to your project root and run:
 
 ```bash
-git submodule add https://github.com/loadsys/bin.git bin
+git submodule add https://github.com/loadsys/CakePHP-Shell-Scripts.git bin
 ```
+The `bin` at the end is critical. The scripts expect to be able to call each other in a folder off of the project root named bin/.
+
 
 ## Getting Updates ##
 
