@@ -28,7 +28,6 @@ fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="$DIR/bin"
-CODE=1   # Exits non-zero if nothing done, no updates applied.
 
 if [ -n "$1" ]; then
 	ARG_BRANCH=$1
@@ -53,9 +52,9 @@ if [ $? -gt 0 ]; then
 	git merge origin/$ARG_BRANCH
 	cd $DIR
 	git add bin
-	CODE=0
+	echo "## Done. Please commit the staged changes."
+	exit 0
+else
+	echo "## No changes to apply to the bin/ submodule."
+	exit 1     # Exits non-zero if nothing done, no updates applied.
 fi
-
-
-echo "## Done. Please commit the staged changes."
-exit $CODE
