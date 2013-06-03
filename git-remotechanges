@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    For the git repo in the current working directory, will fetch any updtes from origin and exit 0 if there are no changes, and 1 if there are. Useful for determining whether to proceed with a task or not.
+
+Usage:
+    bin/${0##*/} [ref]
+    
+    Takes an optional ref name to use when comparing against the local copy 
+    of the remote repo. Defaults to 'master'.
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+if [ -n "$1" ]; then
+	ARG_BRANCH=$1
+else
+	ARG_BRANCH="master"
+fi
+
+git fetch origin
+git diff origin/$ARG_BRANCH --quiet --exit-code
+exit $?
