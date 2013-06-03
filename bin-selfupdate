@@ -28,6 +28,7 @@ fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="$DIR/bin"
+CODE=1   # Exits non-zero if nothing done, no updates applied.
 
 if [ -n "$1" ]; then
 	ARG_BRANCH=$1
@@ -38,8 +39,17 @@ fi
 
 echo "## Self-updating the bin/ submodule."
 cd $BIN_DIR
-git pull origin $ARG_BRANCH
-cd $DIR
-git add bin
+git checkout $ARG_BRANCH
+
+$BIN_DIR/git-remotechanges
+if [ $? -gt 0 ]; then
+	echo "## Updates are available. Applying them."
+	git merge origin/$ARG_BRANCH
+	cd $DIR
+	git add bin
+	CODE=0
+fi
+
 
 echo "## Done. Please commit the staged changes."
+exit $CODE
