@@ -91,13 +91,8 @@ Automates all of the steps for a read-only copy of the app (such as staging or p
 A simple shortcut script that uses the contents of `Config/database.php` to start a command line `mysql` session for you. Incredibly convenient in a production environment to run manual data queries during troubleshooting.
 
 
-### bin/spawn ###
-Unique to the Skeleton (it doesn't get copied into projects spawned from the Skeleton), it automates the process of generating new blank projects from the CakePHP-Skeleton project itself.
-
-
 ### bin/add-cakephp-version and bin/symlink-cake-core ###
 The first script automates the process of fetching and preparing local copies of the CakePHP core project.
 
 The second automates the Loadsys standard practice of not including Cake core files in the repo and instead symlinking to a local Cake core.
-
 
