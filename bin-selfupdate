@@ -53,8 +53,8 @@ if [ $? -gt 0 ]; then
 	cd $DIR
 	git add bin
 	echo "## Done. Please commit the staged changes."
-	exit 0
+	exit 1    # Exits non-zero updates had to be applied.
 else
 	echo "## No changes to apply to the bin/ submodule."
-	exit 1     # Exits non-zero if nothing done, no updates applied.
+	exit 0 
 fi
