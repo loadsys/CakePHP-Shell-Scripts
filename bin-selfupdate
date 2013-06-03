@@ -39,7 +39,13 @@ fi
 
 echo "## Self-updating the bin/ submodule."
 cd $BIN_DIR
-git checkout $ARG_BRANCH
+
+# Save the "current" commit for later.
+EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
+if [ "$EXISTINGBRANCH" != "$ARG_BRANCH" ]; then
+	echo "## Switching branches from $EXISTINGBRANCH to $ARG_BRANCH.";
+	git checkout $ARG_BRANCH
+fi
 
 $BIN_DIR/git-remotechanges
 if [ $? -gt 0 ]; then
