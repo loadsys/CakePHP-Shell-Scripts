@@ -19,10 +19,20 @@ The `bin` at the end is critical. The scripts expect to be able to call each oth
 
 ## Getting Updates ##
 
-To pull any recent changes to the script library into your project, just run:
+To pull any recent changes to the script library into your project, use the `bin/bin-selfupdate` script to update the submodule to the latest release and add the changes to the parent repo for you to commit.
 
 ```bash
-git submodule update
+bin/bin-selfupdate
+```
+
+If your bin/ dir does not yet have the bin-selfupdate script, you can run the following commands manually the first time:
+
+```bash
+cd bin
+git pull origin master
+cd ..
+git add bin
+git commit -m "Updated bin submodule to latest release."
 ```
 
 ## Contributing Improvements ##
