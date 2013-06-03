@@ -29,27 +29,27 @@ fi
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="$DIR/bin"
 
-if [ -n "$1" ]; then
-	ARG_BRANCH=$1
-else
-	ARG_BRANCH="master"
-fi
+# if [ -n "$1" ]; then
+# 	ARG_BRANCH=$1
+# else
+# 	ARG_BRANCH="master"
+# fi
 
 
 echo "## Self-updating the bin/ submodule."
 cd $BIN_DIR
 
 # Save the "current" commit for later.
-EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
-if [ "$EXISTINGBRANCH" != "$ARG_BRANCH" ]; then
-	echo "## Switching branches from $EXISTINGBRANCH to $ARG_BRANCH.";
-	git checkout $ARG_BRANCH
-fi
+# EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
+# if [ "$EXISTINGBRANCH" != "$ARG_BRANCH" ]; then
+# 	echo "## Switching branches from $EXISTINGBRANCH to $ARG_BRANCH.";
+# 	git checkout $ARG_BRANCH
+# fi
 
 $BIN_DIR/git-remotechanges
 if [ $? -gt 0 ]; then
 	echo "## Updates are available. Applying them."
-	git merge origin/$ARG_BRANCH
+	git merge origin  #/$ARG_BRANCH
 	cd $DIR
 	git add bin
 	echo "## Done. Please commit the staged changes."
