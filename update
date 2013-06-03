@@ -41,15 +41,6 @@ MIGRATION_DIR="$CONFIG_DIR/Migration"
 SLEEP_TIME=10
 DEFAULT_DBUPDATES_FILE="$CONFIG_DIR/sql/db_updates.sql"
 
-# Self-update the bin/ folder is a submodule, check for and apply updates.
-if [ -f "$BIN_DIR/.git" ]; then
-	$BIN_DIR/bin-selfupdate
-	if [ $? -gt 0 ]; then
-		echo "## Changes applied to the bin/ submodule. Please re-run the update."
-		exit 1
-	fi
-fi
-
 if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
 	DB_UPDATES_METHOD='migrations'
 elif [ -e "$DEFAULT_DBUPDATES_FILE" ]; then
@@ -164,7 +155,7 @@ fi
 $BIN_DIR/set-configs $ARG_APPENV
 
 
-# Load submodules.
+# Make any changes to submodules specified by the repo.
 $BIN_DIR/git-submodules
 
 
