@@ -5,6 +5,7 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 * Most scripts listed below can take a '-h' option as their first argument to output usage information.
 * Most are designed to run with few or no arguments, guessing sensible defaults whenever possible.
 
+
 ## Installation ##
 
 **WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project (yet).
@@ -19,7 +20,7 @@ The `bin` at the end is critical. The scripts expect to be able to call each oth
 
 ## Getting Updates ##
 
-To pull any recent changes to the script library into your project, use the `bin/bin-selfupdate` script to update the submodule to the latest release and add the changes to the parent repo for you to commit.
+To pull any recent changes to the script library into your project, use the `bin/bin-selfupdate` script to update the submodule to the latest release and add the changed commit to the parent repo for you to commit.
 
 ```bash
 bin/bin-selfupdate
@@ -35,6 +36,9 @@ git add bin
 git commit -m "Updated bin submodule to latest release."
 ```
 
+Changing the active commit for the repo will then be applied to other copies of the project when `git submodule update` is executed (either by `bin/update`, `bin/init-repo` or manually.)
+
+
 ## Contributing Improvements ##
 
 1. Checkout a copy of the Loadsys CakePHP-Skeleton, which includes this project as a submodule. (This arrangement is useful for the ability to test the scripts  against the CakePHP-Skeleton project itself.)
@@ -47,7 +51,7 @@ git commit -m "Updated bin submodule to latest release."
 
 Need to talk about the consequences and delays in how changes to this repo affect script runs in projects that include it.
 
-For example, take a project that has already included this repo as a submodule but hasn't been updated for a while (and we've made changes to this bin repo). When that project runs `bin/update` to update the staging copy of the app, it will be the "stale" version of bin/update that executes. That version of bin/update will eventually trigger a `git submodule update`, which might pull in changes to _itself_-- but too late for the current runtime. 
+For example, take a project that has already included this repo as a submodule but hasn't been updated for a while (and we've made changes to this bin repo in the meantime). When that project runs `bin/update` to update the staging copy of the app, it will be the "stale" version of bin/update that executes. That version of bin/update will eventually trigger a `git submodule update`, which might pull in changes to _itself_-- but too late for the current runtime. 
 
 The bigger issue is that if a change to a bin/ script happens DURING the run of the stale `update` script as a result of the included `git submodules update` call, and the changes to that dependency script are incompatible with the stale version of `update`, the run will fail in unpredictable ways.
 
