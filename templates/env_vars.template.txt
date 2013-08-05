@@ -3,7 +3,7 @@
 # The `bin/set-configs` script can be used to copy the environment-specific version of the file into the expected location of Config/env_vars.txt.
 
 # The descriptive name for the current project. Will mainly be used in email reports.
-LOADSYS_PROJECT_NAME=Loadsys Project
+LOADSYS_PROJECT_NAME="Loadsys Project"
 
 # The destination email address for all emailed reports.
 LOADSYS_EMAIL=owner@site.com

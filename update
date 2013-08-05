@@ -198,7 +198,7 @@ if [ -n "${LOADSYS_EMAIL}" ]; then
 
 	EOD
 
-	bin/email.sh "${LOADSYS_EMAIL}" "${LOADSYS_PROJECT_NAME}: Code push complete" "${MSG_BODY}"
+	bin/email "${LOADSYS_EMAIL}" "${LOADSYS_PROJECT_NAME}: Code push complete" "${MSG_BODY}"
 	rm -f "${MSG_BODY}"
 fi
 
