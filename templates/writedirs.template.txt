@@ -1,0 +1,3 @@
+tmp
+Plugin/Upload/files
+webroot/css

@@ -28,9 +28,10 @@ fi
 
 # Variable initalization.
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+BIN_DIR="$DIR/bin";
 CONFIG_DIR="$DIR/Config";
 DBCONFIG_FILE="$CONFIG_DIR/database.php"
-DEFAULT_DBCONFIG_FILE="${DBCONFIG_FILE}.default"
+DEFAULT_DBCONFIG_FILE="$BIN_DIR/templates/database.template.php"
 
 DEFAULT_HOST='localhost'
 DEFAULT_PREFIX=''
