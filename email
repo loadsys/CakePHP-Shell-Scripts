@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Provides a simplified interface for sending email from the local system.
+
+Usage:
+    bin/${0##*/} <emailAddress> <subject> <msgBodyFile>
+    
+    - emailAddress: The email address to which to send the message.
+    - subject: The subject line to use for the message.
+    - msgBodyFile: The full path to the text file containing the message body.
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Variable initialization.
+MAIL="$( which mail )"
+if [ $? -gt 0 ]; then
+	echo "!! Unable to locate the 'mail' executable. !!"
+	echo ""
+	exit 1
+fi
+
+# Input processing.
+if [ -n "$1" ]; then
+	ADDRESSES=$1
+else
+	usage
+fi
+
+if [ -n "$2" ]; then
+	SUBJECT=$2
+else
+	usage
+fi
+
+if [ -r "$3" ]; then
+	MESSAGE_FILE=$3
+else
+	usage
+fi
+
+${MAIL} -s "${SUBJECT}" "${ADDRESSES}" < "${MESSAGE_FILE}"
+exit $?
