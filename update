@@ -5,7 +5,7 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
+${0##*/}
     Designed to perform all the necessary steps to update a local 
     copy of the project from the remote repo, which is assumed to 
     be "ahead" of the local copy. Mainly intended for use in 
@@ -21,6 +21,9 @@ Usage:
 	$3 = The local user to associate the project with. Default: owner of ./
 	$4 = The local group to associate the project with. Default: group of ./
 
+Environment Variables:
+	LOADSYS_EMAIL = If set, an email report for the update run will be 
+					generated and sent to the email address contained within.
 
 EOT
 
@@ -40,6 +43,7 @@ CONFIG_DIR="$DIR/Config"
 MIGRATION_DIR="$CONFIG_DIR/Migration"
 SLEEP_TIME=10
 DEFAULT_DBUPDATES_FILE="$CONFIG_DIR/sql/db_updates.sql"
+DEFAULT_ENVVARS_FILE="$CONFIG_DIR/env_vars.txt"
 
 if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
 	DB_UPDATES_METHOD='migrations'
@@ -48,6 +52,11 @@ elif [ -e "$DEFAULT_DBUPDATES_FILE" ]; then
 else
 	DB_UPDATES_METHOD='none'
 fi
+
+if [ -r $DEFAULT_ENVVARS_FILE ]; then
+	source "${DEFAULT_ENVVARS_FILE}"
+fi
+
 
 # Input processing.
 if [ $1 ]; then
@@ -88,10 +97,11 @@ fi
 # Backup the live DB.
 $BIN_DIR/db-backup
 echo ''
-echo "## Sleeping for ${SLEEP_TIME} seconds to give you time to think about if the "
-echo "##   backup size list above is appropriate. (Press Ctrl-C to abort the update)..."
+echo "## Sleeping for ${SLEEP_TIME} seconds to consider the backup size."
+echo "##   (Press Ctrl-C to abort the update)..."
+echo "##   (Press ENTER to continue immediately)..."
 echo ''
-sleep ${SLEEP_TIME}
+read -t ${SLEEP_TIME} NOTUSED
 
 
 # Save the "current" commit for later.
@@ -136,7 +146,6 @@ elif [ "$DB_UPDATES_METHOD" = 'none' ]; then
 fi
 
 
-
 # This if case should really be looking to see if we're being asked to fast forward on the same branch, or switch to the HEAD of a different branch.
 # if [ "$ARG_NEWCOMMIT" = "origin/master" ]; then
 	echo "## Merging upstream changes from: $ARG_NEWCOMMIT";
@@ -148,7 +157,8 @@ fi
 
 
 echo "## New commit is now active:";
-git log -1
+GIT_LOG=$( git log -1 )
+echo "${GIT_LOG}"
 
 
 if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
@@ -174,6 +184,23 @@ $BIN_DIR/set-owner ${ARG_OWNER} ${ARG_GROUP}
 
 # Set write permissions.
 $BIN_DIR/writedirs
+
+
+# Send an email report if the ENV var is set in Config/env_vars.txt
+if [ -n "${LOADSYS_EMAIL}" ]; then
+	echo "## Generating email report."
+	MSG_BODY=$( mktemp -t "${0##*/}.email_report.XXXXXXXXXX" )
+
+	cat > "$MSG_BODY" <<-EOD
+	A code push has been completed for ${LOADSYS_PROJECT_NAME}.
+
+	${GIT_LOG}
+
+	EOD
+
+	bin/email.sh "${LOADSYS_EMAIL}" "${LOADSYS_PROJECT_NAME}: Code push complete" "${MSG_BODY}"
+	rm -f "${MSG_BODY}"
+fi
 
 
 echo "## Update process complete.";

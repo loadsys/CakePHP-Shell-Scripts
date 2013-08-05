@@ -32,9 +32,9 @@ CONFIG_DIR="$DIR/Config";
 
 # Copy config files in place
 if [ $1 ]; then
-        ARG_ENV=$1;
+	ARG_ENV=$1;
 else
-        ARG_ENV="prod";
+	ARG_ENV="prod";
 fi
 
 echo "## Copying config files into place for environment: $ARG_ENV";

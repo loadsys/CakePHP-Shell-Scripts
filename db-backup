@@ -50,7 +50,7 @@ if(!file_exists($backupDir) || !is_dir($backupDir)) {
 // Build the command lines to execute.
 $sqlFile = $backupDir . "/{$db->default['database']}_{$date}.sql";
 $zipFile = "{$sqlFile}.zip";
-$dumpCmd = "mysqldump --user={$db->default['login']}{$passClause} {$db->default['database']} > {$sqlFile}\n";
+$dumpCmd = "mysqldump --host={$db->default['host']} --user={$db->default['login']}{$passClause} {$db->default['database']} > {$sqlFile}\n";
 $compressCmd = "zip -jrq8 {$zipFile} {$sqlFile}; rm {$sqlFile}";
 //echo $db->default['database'] . ' ' . $db->default['login'] . ' ' . $db->default['password'] . "\n";
 
@@ -66,4 +66,3 @@ function human_filesize($bytes, $decimals = 2) {
   $factor = floor((strlen($bytes) - 1) / 3);
   return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$sz[$factor];
 }
-

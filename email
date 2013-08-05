@@ -51,5 +51,6 @@ else
 	usage
 fi
 
+echo "## Sending email to: ${ADDRESSES}.";
 ${MAIL} -s "${SUBJECT}" "${ADDRESSES}" < "${MESSAGE_FILE}"
 exit $?
