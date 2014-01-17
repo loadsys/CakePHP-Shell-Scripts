@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Echoes the name of the currently checked-out git branch. Exits
+    with a non-zero code when run in a non-git directory. The output
+    of this script can be captured into a variable in another script using the following:
+    
+    BRANCH=\$(bin/git-currentbranch)
+
+Usage:
+    bin/${0##*/}
+
+Environment Variables:
+	(none)
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+#@TODO: Works, but throws a fatal error message if run in a non-git dir. We need to suppress that output.
+
+git rev-parse --quiet --abbrev-ref HEAD
+exit $?
