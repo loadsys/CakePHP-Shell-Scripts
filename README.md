@@ -1,21 +1,23 @@
 # Loadsys Cake Command Line Scripts #
 
-This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below.
+**DISCLAIMER: We use these tools ourselves, but that doesn't mean they will necessarily work for you in your situation. This repo is public in case it can be of use to anyone else (and because it's convenient for us), but it _is not supported_ and _may change without notice_. Issues and contributions may be flat out ignored if they don't impact us. You have been warned!**
 
-* Most scripts listed below can take a '-h' option as their first argument to output usage information.
-* Most are designed to run with few or no arguments, guessing sensible defaults whenever possible.
+This collection of scripts is intended to provide consistency and shortcuts for common project tasks (currently they are tuned for CakePHP v2.x projects, pre-Composer). Key tools are highlighted and described below.
+
+* Most scripts listed below can take a `-h` option as their first argument to output usage information.
+* Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
 
 
 ## Installation ##
 
-**WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project (yet).
+**WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project.
 
 The scripts all expect to live together in a subfolder of your project root named `bin/`. To install them, navigate to your project root and run:
 
 ```bash
 git submodule add https://github.com/loadsys/CakePHP-Shell-Scripts.git bin
 ```
-The `bin` at the end is critical. The scripts expect to be able to call each other in a folder off of the project root named bin/.
+The `bin` at the end is critical. The scripts expect to be able to call each other in a folder directly inside the project root named `bin/`.
 
 
 ## Getting Updates ##
@@ -36,10 +38,12 @@ git add bin
 git commit -m "Updated bin submodule to latest release."
 ```
 
-Changing the active commit for the repo will then be applied to other copies of the project when `git submodule update` is executed (either by `bin/update`, `bin/init-repo` or manually.)
+The above changes the active commit for the submoduled bin repo, which will then be applied to other copies of the project when `git submodule update` is executed (either by `bin/update`, `bin/init-repo` or manually.)
 
 
 ## Contributing Improvements ##
+
+**WARNING: Outside contributions are appreciated, but may be ignored if they do not impact our usage of these tools. Please consider this before sending a pull request.**
 
 1. Checkout a copy of the Loadsys CakePHP-Skeleton, which includes this project as a submodule. (This arrangement is useful for the ability to test the scripts  against the CakePHP-Skeleton project itself.)
 2. @TODO What's the actual process from here? Edit the submodule?
@@ -57,6 +61,8 @@ The bigger issue is that if a change to a bin/ script happens DURING the run of 
 
 The script really needs a way of updating JUST the CakePHP-Shell-Scripts submodule **first** (and no other submodules that probably expect the codebase to be changing along with it), and if it detects any changes have been applied, exits and re-calls the newer version of itself. Seems like there is a potential for an infinite loop here if the change detection is done wrong though.
 
+This may all be far less of an issue when we switch to composer-based installations, since it will handle the "bootstrapping" for us.
+
 
 ## Key Scripts ##
 
@@ -72,7 +78,7 @@ Designed to perform all of the steps necessary to initialize a project for a dev
 * Applying database migrations, if present.
 * Offering to load Seed data, if present.
 
-Given and existing web-hosted folder and a database ready for use, it should single-handedly prep a newly cloned copy of the project for use, or development.
+Given an existing web-hosted folder and a database ready for use, it should fully prep a newly cloned copy of the project for use, or development.
 
 
 ### bin/update ###
@@ -98,5 +104,5 @@ A simple shortcut script that uses the contents of `Config/database.php` to star
 ### bin/add-cakephp-version and bin/symlink-cake-core ###
 The first script automates the process of fetching and preparing local copies of the CakePHP core project.
 
-The second automates the Loadsys standard practice of not including Cake core files in the repo and instead symlinking to a local Cake core.
+The second automates the Loadsys standard practice of not including Cake core files in the repo and instead symlinking to a local Cake core. (Will eventually become moot as we move to composer.)
 
