@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Script is designed to dump frequently updated data from production for
+# importing into a local development database. Currently has hardcoded
+# $TABLES and needs to be abstracted to work for "any" project more easily.
+# beporter@users.sourceforge.net, 2013-03-08
+#
+# Run from web root directory on production.
+#
+# Example:
+# bin/db-sample-data database dbuser password
+
+echo "WORK IN PROGRESS";
+exit 0;
+
+# Configuration vars. Set these appropriately for your app and environment.
+TABLES="table1 table2 table3"
+WEBROOT_PATH="webroot/"
+PUBLIC_URL="http://mysite.com"
+
+# Internal var setup.
+DB=$1
+USER=$2
+PASS=$3
+DATE=$(date +%Y-%m-%d)
+OPTIONS="--skip-add-drop-table --no-create-info"
+TMP_PATH="tmp/"
+DESTINATION_FILE="${DB}_sample_data_$DATE.sql"
+
+
+mysqldump -u ${USER} -p${PASS} ${OPTIONS} ${DB} --tables ${TABLES} > "${TMP_PATH}${DESTINATION_FILE}"
+zip -rv9 "${WEBROOT_PATH}${DESTINATION}.zip" "${TMP_PATH}${DESTINATION_FILE}"
+rm -f "${TMP_PATH}${DESTINATION_FILE}"
+echo "Download URL: ${PUBLIC_URL}/${DESTINATION}.zip"
+read -p "Delete ${PUBLIC_URL}/${DESTINATION}.zip? [Y/n]: " ARG_DELETEFILE
+case $ARG_DELETEFILE in
+	[Yy]*|* ) rm -f "${WEBROOT_PATH}${DESTINATION}.zip"; echo "File deleted." break;;
+	[Nn]* ) echo "File REMAINS! Please clean it up when you are done to prevent data leaks." break;;
+esac
