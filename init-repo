@@ -135,6 +135,7 @@ $BIN_DIR/writedirs
 $BIN_DIR/db-loadschema
 
 # Check for a SeedShell and if present, prompt to run it.
+# @TODO: Change this to assume the SeedsShell plugin. Run a grep on the Config/Seeds/ folder for files starting with our $ARG_ENV to know if there's anything to run.
 if [ -e "$DEFAULT_SEEDSHELL" ]; then
 	echo "## Found a SeedShell for populating sample data in the database."
 	$DIR/Console/cake seed fill

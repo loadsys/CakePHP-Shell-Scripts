@@ -62,6 +62,7 @@ fi
 if [ $1 ]; then
 	ARG_NEWCOMMIT=$1
 else
+	#@TODO: This should really default to the remote tracked version of $EXISTINGBRANCH (which is currently set later), so that we can fast-forward on the same branch by default. So if $EXISTINGBRANCH is "master", then $ARG_NEWCOMMIT should (typically) be "origin/master".
 	ARG_NEWCOMMIT="origin/master"
 fi
 
