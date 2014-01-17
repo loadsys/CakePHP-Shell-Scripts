@@ -40,9 +40,6 @@ EOD;
 /**
  * Extends the Directory iterator class to filter out the current script and
  * any non-executables from the given directory.
- *
- * @param string $scriptName Typically set to basename($argv[0]) when the method is called.
- * @return void
  */
 class ExeIterator extends FilterIterator {
 	/**
@@ -93,6 +90,23 @@ class ExeIterator extends FilterIterator {
 	}
 }
 
+/**
+ * Takes a variable number of string arguments and checks to make sure they
+ * are available JSON_* constants (based on PHP version.) Returns the bitwise
+ * OR of all available options, suitable for passing as the second argument
+ * to `json_encode()`.
+ *
+ * @return integer The bitwise OR-ing of all valid and available JSON_* options.
+ */
+function json_opts() {
+	$bitwise = 0;
+	foreach (func_get_args() as $arg) {
+		if (defined($arg)) {
+			$bitwise |= constant($arg);
+		}
+	}
+	return $bitwise;
+}
 
 /**
  * main() ===================================================================
@@ -102,7 +116,6 @@ $options = getopt('h', array());
 $dir = dirname(__FILE__);
 $composerFile = $dir . '/composer.json';
 $selfName = basename($argv[0]);
-$jsonEncodeOpts = (defined('JSON_PRETTY_PRINT') ? constant('JSON_PRETTY_PRINT') : 0);
 
 if (isset($options['h'])) {
 	usage($selfName);
@@ -111,6 +124,6 @@ if (isset($options['h'])) {
 $executables = array_values(iterator_to_array(new ExeIterator($dir, $selfName)));
 $composerJson = json_decode(file_get_contents($composerFile), $assoc = false);
 $composerJson->bin = $executables;
-file_put_contents($composerFile, json_encode($composerJson, $jsonEncodeOpts));
+file_put_contents($composerFile, json_encode($composerJson, json_opts('JSON_UNESCAPED_SLASHES', 'JSON_PRETTY_PRINT')));
 
 echo "{$composerFile} updated." . PHP_EOL . PHP_EOL;

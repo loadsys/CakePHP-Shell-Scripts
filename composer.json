@@ -9,10 +9,40 @@
         }
     ],
     "require": {
-		"php": ">=5.3.0"
+        "php": ">=5.3.0"
     },
-	"config": {
-		"bin-dir": "bin"
-	},
-	"bin": []
+    "config": {
+        "bin-dir": "bin"
+    },
+    "bin": [
+        "add-cakephp-version",
+        "bin-selfupdate",
+        "clear-cache",
+        "clear-logs",
+        "db-backup",
+        "db-credentials",
+        "db-loadschema",
+        "db-login",
+        "db-sample-data",
+        "db-showupdates",
+        "db-writeconfig",
+        "email",
+        "find-symlinks-to-in",
+        "git-currentbranch",
+        "git-localchanges",
+        "git-remotechanges",
+        "git-submodules",
+        "init-repo",
+        "migrations",
+        "paths",
+        "rename-empty",
+        "run-tests",
+        "set-configs",
+        "set-owner",
+        "symlink-cake-core",
+        "template",
+        "update",
+        "updatewritedirs",
+        "writedirs"
+    ]
 }

@@ -73,7 +73,7 @@ The above changes the active commit for the submoduled bin repo, which will then
 2. @TODO What's the actual process from here? Edit the submodule?
 
 
-Only scripts that are set as executable will be auto-symlinked during a composer-based installation. In order to add new scripts to the list of symlinks composer should create, run the `composer-binaries` command. This will rewrite the `"bin"` config in the composer.json file to include all executable files in the project root directory.
+Only scripts that are set as executable will be auto-symlinked during a composer-based installation. In order to add new scripts to the list of symlinks composer should create, run the `./composer-binaries` command. This will rewrite the `"bin"` config in the composer.json file to include all executable files in the project root directory.
 
 When making changes to the composer.json file included in this package, be sure to run `composer validate` to run a syntax check on the json file before committing.
 
