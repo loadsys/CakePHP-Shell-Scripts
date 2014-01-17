@@ -85,7 +85,7 @@ else
 fi
 
 
-# Check for local changes that would cause a merge (without -f) will fail later.
+# Check for local changes that would cause a merge (without -f) to fail later.
 $BIN_DIR/git-localchanges
 if [ $? -gt 0 ]; then
 	echo "!! You will need to resolve any differences between the working copy  !!"
