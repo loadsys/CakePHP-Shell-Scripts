@@ -1,7 +1,7 @@
 {
     "name": "loadsys/cakephp-shell-scripts",
     "description": "This collection of scripts is intended to provide consistency and shortcuts for common project tasks (currently they are tuned for CakePHP v2.x projects, pre-Composer).",
-    "license": "MIT http://opensource.org/licenses/MIT",
+    "license": "MIT",
     "authors": [
         {
             "name": "Brian Porter",
@@ -10,8 +10,11 @@
     ],
     "require": {
 		"php": ">=5.3.0"
-    }
+    },
 	"config": {
 		"bin-dir": "bin"
-	}
+	},
+	"bin": [
+		"update"
+	]
 }

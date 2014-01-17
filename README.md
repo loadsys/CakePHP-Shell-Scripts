@@ -12,6 +12,27 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 
 **WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project.
 
+## composer ##
+
+Your project's own `composer.json` file should look something like this:
+
+```json
+    "repositories": [
+        {
+        	"type": "vcs",
+        	"url": "https://github.com/loadsys/CakePHP-Shell-Scripts"
+        }
+    ],
+    "require": {
+		"loadsys/cakephp-shell-scripts": "*"
+    },
+```
+Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
+
+## git submodule ##
+
+(This is the old method and will eventually be retired.)
+
 The scripts all expect to live together in a subfolder of your project root named `bin/`. To install them, navigate to your project root and run:
 
 ```bash
@@ -20,7 +41,7 @@ git submodule add https://github.com/loadsys/CakePHP-Shell-Scripts.git bin
 The `bin` at the end is critical. The scripts expect to be able to call each other in a folder directly inside the project root named `bin/`.
 
 
-## Getting Updates ##
+### Getting Submodule Updates ###
 
 To pull any recent changes to the script library into your project, use the `bin/bin-selfupdate` script to update the submodule to the latest release and add the changed commit to the parent repo for you to commit.
 
@@ -47,6 +68,11 @@ The above changes the active commit for the submoduled bin repo, which will then
 
 1. Checkout a copy of the Loadsys CakePHP-Skeleton, which includes this project as a submodule. (This arrangement is useful for the ability to test the scripts  against the CakePHP-Skeleton project itself.)
 2. @TODO What's the actual process from here? Edit the submodule?
+
+
+When making changes to the composer.json file included in this package, be sure to run `composer diagnose` to run a syntax check on the json file before committing.
+
+Eventually we should also publish this via packagist.org to make usage easier.
 
 
 ## Issues ##
