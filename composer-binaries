@@ -1,0 +1,116 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Searches the local directory for all executable files (other than itself)
+ * and updates the local composer.json file's config.bin array.
+ */
+
+
+/**
+ * Prints usage information and exits.
+ *
+ * @param string $scriptName Typically set to basename($argv[0]) when the method is called.
+ * @return void
+ */
+function usage ($scriptName) {
+	$usage = <<<EOD
+
+{$scriptName} 
+
+	Searches the directory this script lives in for other executable files.
+	Generates a list of all _other_ executable files (exculding itself) in
+	the same directory of this script and replaces the "bin" configuration
+	in the local composer.json with a properly formatted list using the
+	found file names.
+
+	In short, this script updates the composer.json file with a list of
+	executable scripts that should be symlinked into the "bin-dir" of
+	projects that require this package.
+
+Usage:
+    ./{$scriptName} 
+
+
+EOD;
+
+	echo $usage;
+	exit(0);
+}
+
+/**
+ * Extends the Directory iterator class to filter out the current script and
+ * any non-executables from the given directory.
+ *
+ * @param string $scriptName Typically set to basename($argv[0]) when the method is called.
+ * @return void
+ */
+class ExeIterator extends FilterIterator {
+	/**
+	 * Stores the name of the current script to strip ot from output.
+	 *
+	 * @var string $selfName
+	 */
+	private $selfName = null;
+
+	/**
+	 * Created a filtered iterator with an internal Directory iterator.
+	 *
+	 * @param string $path Path to the folder to scan for executables.
+	 * @param string $selfName The basename() of the currently executing script (to exclude from the results).
+	 * @return void
+	 */
+	public function __construct($path, $selfName) {
+		parent::__construct(new DirectoryIterator($path));
+		$this->selfName = $selfName;
+	}
+
+	/**
+	 * Returns true for executable files in the current directory. Returns
+	 * false for dot directories (. and ..), the currently executing script,
+	 * and anything that is not set as executable.
+	 *
+	 * @return boolean True if current file is executable and not ourself, false otherwise.
+	 */
+	public function accept() {
+		$f = parent::current();
+		return (
+			!$f->isDot()
+			&& !$f->isDir()
+			&& $f->isExecutable()
+			&& ($f->getBasename() !== $this->selfName)
+		);
+	}
+
+	/**
+	 * Returns the basename for the current file, instead of the entire
+	 * SplFileInfo object.
+	 *
+	 * @return string The basename() for the current file.
+	 */
+	public function current() {
+		$f = parent::current();
+		return $f->getBasename();
+	}
+}
+
+
+/**
+ * main() ===================================================================
+ */
+
+$options = getopt('h', array());
+$dir = dirname(__FILE__);
+$composerFile = $dir . '/composer.json';
+$selfName = basename($argv[0]);
+$jsonEncodeOpts = (defined('JSON_PRETTY_PRINT') ? constant('JSON_PRETTY_PRINT') : 0);
+
+if (isset($options['h'])) {
+	usage($selfName);
+}
+
+$executables = array_values(iterator_to_array(new ExeIterator($dir, $selfName)));
+$composerJson = json_decode(file_get_contents($composerFile), $assoc = false);
+$composerJson->bin = $executables;
+file_put_contents($composerFile, json_encode($composerJson, $jsonEncodeOpts));
+
+echo "{$composerFile} updated." . PHP_EOL . PHP_EOL;
