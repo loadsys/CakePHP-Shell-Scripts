@@ -26,6 +26,9 @@ Your project's own `composer.json` file should look something like this:
     "require": {
 		"loadsys/cakephp-shell-scripts": "*"
     },
+    "config": {
+		"bin-dir": "bin"
+    }
 ```
 Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
 
@@ -70,7 +73,7 @@ The above changes the active commit for the submoduled bin repo, which will then
 2. @TODO What's the actual process from here? Edit the submodule?
 
 
-When making changes to the composer.json file included in this package, be sure to run `composer diagnose` to run a syntax check on the json file before committing.
+When making changes to the composer.json file included in this package, be sure to run `composer validate` to run a syntax check on the json file before committing.
 
 Eventually we should also publish this via packagist.org to make usage easier.
 
