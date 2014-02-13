@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Convenience wrapper around code sniffing tool. If $1 is provided, a
+    summary and full reports will be generated, rather than being output
+    to the standard output.
+
+Usage:
+    bin/${0##*/} [save reports]
+
+    Specify 'y' as the first argument to save reports in the tmp directory,
+    else full and summary reports are generated but not saved to a file.
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+umask a+rw
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+BIN_DIR="${DIR}/bin"
+TMP_DIR="${DIR}/tmp"
+FULL_REPORT_FILE="${TMP_DIR}/reports/full-codesniff.txt"
+SUMMARY_REPORT_FILE="${TMP_DIR}/reports/summary-codesniff.txt"
+
+if [ -n "$1" ]; then
+	# Generate Full and Summary Reports and save to a file
+	COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
+else
+	# Generate Full and Summary Reports but not to a file
+	COVERAGE="--report-full --report-summary"
+fi
+
+phpcs -p --extensions=php --standard=CakePHP ${COVERAGE} ${DIR}/Controller ${DIR}/Model ${DIR}/View ${DIR}/Lib
+
+if [ -n "$2" ]; then
+	echo "## Full report created at: ${FULL_REPORT_FILE}"
+	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
+fi
