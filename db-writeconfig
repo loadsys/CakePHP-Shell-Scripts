@@ -31,7 +31,10 @@ DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="$DIR/bin";
 CONFIG_DIR="$DIR/Config";
 DBCONFIG_FILE="$CONFIG_DIR/database.php"
-DEFAULT_DBCONFIG_FILE="$BIN_DIR/templates/database.template.php"
+
+REAL_BIN_DIR="$( dirname "$( readlink "$0" )" )"
+TEMPLATE_DIR="$(cd bin && cd -P "$REAL_BIN_DIR" && pwd)/templates"
+DEFAULT_DBCONFIG_FILE="$TEMPLATE_DIR/database.template.php"
 
 DEFAULT_HOST='localhost'
 DEFAULT_PREFIX=''
