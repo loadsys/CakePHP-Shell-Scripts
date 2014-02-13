@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Convenience wrapper for executing test suite with necessary args to
+# generate code coverage.
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+PHPUNIT_CONFIG="$DIR/Config/phpunit.xml"
+
+# ${DIR}/bin/phpunit \  # phpunit direct.
+${DIR}/bin/cake test \  # Cake TestShell
+ --configuration="${PHPUNIT_CONFIG}" \
+ "$@"

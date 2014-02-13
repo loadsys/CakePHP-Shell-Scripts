@@ -26,6 +26,7 @@
         "db-sample-data",
         "db-showupdates",
         "db-writeconfig",
+        "docs-generate",
         "email",
         "find-symlinks-to-in",
         "git-currentbranch",
@@ -42,6 +43,7 @@
         "set-owner",
         "symlink-cake-core",
         "template",
+        "travis-test-runner",
         "update",
         "updatewritedirs",
         "writedirs"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Execute phpDocumentor with a standard config file.
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+CFG_FILE="$DIR/Config/phpdoc.xml"
+
+phpdoc --configuration=${CFG_FILE} "$@"
