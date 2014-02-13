@@ -17,12 +17,6 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 Your project's own `composer.json` file should look something like this:
 
 ```json
-    "repositories": [
-        {
-        	"type": "vcs",
-        	"url": "https://github.com/loadsys/CakePHP-Shell-Scripts"
-        }
-    ],
     "require": {
 		"loadsys/cakephp-shell-scripts": "*"
     },
@@ -77,8 +71,6 @@ Only scripts that are set as executable will be auto-symlinked during a composer
 
 When making changes to the composer.json file included in this package, be sure to run `composer validate` to run a syntax check on the json file before committing.
 
-Eventually we should also publish this via packagist.org to make usage easier.
-
 
 ## Issues ##
 
@@ -86,7 +78,7 @@ Eventually we should also publish this via packagist.org to make usage easier.
 
 Need to talk about the consequences and delays in how changes to this repo affect script runs in projects that include it.
 
-For example, take a project that has already included this repo as a submodule but hasn't been updated for a while (and we've made changes to this bin repo in the meantime). When that project runs `bin/update` to update the staging copy of the app, it will be the "stale" version of bin/update that executes. That version of bin/update will eventually trigger a `git submodule update`, which might pull in changes to _itself_-- but too late for the current runtime. 
+For example, take a project that has already included this repo as a submodule but hasn't been updated for a while (and we've made changes to this bin repo in the meantime). When that project runs `bin/update` to update the staging copy of the app, it will be the "stale" version of bin/update that executes. That version of bin/update will eventually trigger a `git submodule update`, which might pull in changes to _itself_-- but too late for the current runtime.
 
 The bigger issue is that if a change to a bin/ script happens DURING the run of the stale `update` script as a result of the included `git submodules update` call, and the changes to that dependency script are incompatible with the stale version of `update`, the run will fail in unpredictable ways.
 
@@ -99,7 +91,7 @@ This may all be far less of an issue when we switch to composer-based installati
 
 ### bin/init-repo ###
 
-Designed to perform all of the steps necessary to initialize a project for a developer who has just cloned the repo for the first time. (It should never be needed after that.) It performs tasks like: 
+Designed to perform all of the steps necessary to initialize a project for a developer who has just cloned the repo for the first time. (It should never be needed after that.) It performs tasks like:
 
 * Sym-linking a Cake core into the project, if necessary.
 * Copying default config files into place for the given environment.
