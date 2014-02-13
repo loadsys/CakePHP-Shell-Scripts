@@ -7,15 +7,12 @@ usage ()
 
 ${0##*/}
     Convenience wrapper around Cake's test console command. Will
-    Run the Test or Suite specified as $1. If $2 is provided, a
-    code coverage report will be generated for you as well.
+    Run the Test or Suite specified as $1.
 
 Usage:
     bin/${0##*/} <Case or Suite> [generate coverage]
 
     Pass a Test Case or Suite name as the first argument.
-
-    Specify 'y' as the second argument to generate code coverage.
 
 
 EOT
@@ -32,7 +29,7 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-REPORT_FILE="$TMP_DIR/reports/coverage.html"
+PHPUNIT_CONFIG="$DIR/Config/phpunit.xml"
 
 if [ -n "$1" ]; then
 	TESTCASE=$1
@@ -40,13 +37,5 @@ else
 	TESTCASE="All"
 fi
 
-if [ -n "$2" ]; then
-	COVERAGE="--coverage-html $REPORT_FILE"
-fi
-
 $BIN_DIR/clear-cache
-$DIR/Console/cake test app $TESTCASE $COVERAGE
-
-if [ -n "$2" ]; then
-	echo "## Coverage report created at: $REPORT_FILE"
-fi
+$BIN_DIR/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
