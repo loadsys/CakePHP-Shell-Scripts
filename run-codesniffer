@@ -39,7 +39,7 @@ else
 	COVERAGE="--report-full=$FULL_REPORT_FILE --report-summary=$SUMMARY_REPORT_FILE"
 fi
 
-phpcs -p --extensions=php --standard=CakePHP $COVERAGE $DIR/Controller $DIR/Model $DIR/View
+phpcs -p --extensions=php --standard=CakePHP $COVERAGE $DIR/Controller $DIR/Model $DIR/View $DIR/Lib
 
 if [ -n "$2" ]; then
 	echo "## Full report created at: $FULL_REPORT_FILE"
