@@ -2,8 +2,10 @@
 
 **DISCLAIMER: We use these tools ourselves, but that doesn't mean they will necessarily work for you in your situation. This repo is public in case it can be of use to anyone else (and because it's convenient for us), but it _is not supported_ and _may change without notice_. Issues and contributions may be flat out ignored if they don't impact us. You have been warned!**
 
-This collection of scripts is intended to provide consistency and shortcuts for common project tasks (currently they are tuned for CakePHP v2.x projects, pre-Composer). Key tools are highlighted and described below.
+This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below.
 
+* The 1.x branch is tuned for projects that primarily use git submodules for dependency management.
+* The 2.x branch is meant for projects that use composer (although submodules are still supported).
 * Most scripts listed below can take a `-h` option as their first argument to output usage information.
 * Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
 
@@ -17,14 +19,18 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 Your project's own `composer.json` file should look something like this:
 
 ```json
+{
     "require": {
 		"loadsys/cakephp-shell-scripts": "*"
     },
     "config": {
 		"bin-dir": "bin"
     }
+}
 ```
 Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
+
+**Note**: The `bin-dir` is non-standard and may cause conflicts with other composer packages that install "binaries". These scripts are all expect to live in `PROJECT_ROOT/bin` though so don't expect anything to work if you forgo the `bin-dir` setting in your project.
 
 ## git submodule ##
 
@@ -35,7 +41,7 @@ The scripts all expect to live together in a subfolder of your project root name
 ```bash
 git submodule add https://github.com/loadsys/CakePHP-Shell-Scripts.git bin
 ```
-The `bin` at the end is critical. The scripts expect to be able to call each other in a folder directly inside the project root named `bin/`.
+As mentioned above, the `bin` at the end is critical. The scripts expect to be able to call each other in a folder directly inside the project root named `bin/`.
 
 
 ### Getting Submodule Updates ###
@@ -63,13 +69,13 @@ The above changes the active commit for the submoduled bin repo, which will then
 
 **WARNING: Outside contributions are appreciated, but may be ignored if they do not impact our usage of these tools. Please consider this before sending a pull request.**
 
-1. Checkout a copy of the Loadsys CakePHP-Skeleton, which includes this project as a submodule. (This arrangement is useful for the ability to test the scripts  against the CakePHP-Skeleton project itself.)
-2. @TODO What's the actual process from here? Edit the submodule?
+There currently is not a convenient way to set up a test harness around this repo.
 
-
-Only scripts that are set as executable will be auto-symlinked during a composer-based installation. In order to add new scripts to the list of symlinks composer should create, run the `./composer-binaries` command. This will rewrite the `"bin"` config in the composer.json file to include all executable files in the project root directory.
-
-When making changes to the composer.json file included in this package, be sure to run `composer validate` to run a syntax check on the json file before committing.
+1. The best thing to do is to clone this repo (or a fork) into the `bin/` folder of an existing and establish project so you have something to test against.
+1. Make your edits to the scripts as necessary and commit to a feature branch.
+1. if you have **added* new scripts, make sure they are executable and run `./composer-binaries` to update the composer.json file automatically (you should be using PHP 5.4 to make proper use of the `JSON_PRETTY_PRINT` flag).
+1. Run `composer validate` to run a syntax check on the json file.
+1. Submit a pull request for your branch.
 
 
 ## Issues ##
@@ -121,11 +127,10 @@ Automates all of the steps for a read-only copy of the app (such as staging or p
 
 
 ### bin/db-login ###
+
 A simple shortcut script that uses the contents of `Config/database.php` to start a command line `mysql` session for you. Incredibly convenient in a production environment to run manual data queries during troubleshooting.
 
 
-### bin/add-cakephp-version and bin/symlink-cake-core ###
-The first script automates the process of fetching and preparing local copies of the CakePHP core project.
+### bin/db-backup ###
 
-The second automates the Loadsys standard practice of not including Cake core files in the repo and instead symlinking to a local Cake core. (Will eventually become moot as we move to composer.)
-
+Uses the default credentials in `Config/database.php` to create a ZIPed `mysqldump` of that database into a local `backups/` folder. Helpful because you don't have to specify DB credentials in multiple places.
