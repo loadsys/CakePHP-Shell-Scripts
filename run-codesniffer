@@ -14,7 +14,7 @@ Usage:
     bin/${0##*/} [save reports]
 
     Specify 'y' as the first argument to save reports in the tmp directory,
-  	else full and summary reports are generated but not saved to a file.
+    else full and summary reports are generated but not saved to a file.
 
 
 EOT
