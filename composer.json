@@ -43,7 +43,6 @@
         "set-owner",
         "symlink-cake-core",
         "template",
-        "travis-test-runner",
         "update",
         "updatewritedirs",
         "writedirs"
