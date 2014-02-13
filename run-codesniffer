@@ -11,9 +11,10 @@ ${0##*/}
     to the standard output.
 
 Usage:
-    bin/${0##*/} [generate reports]
+    bin/${0##*/} [save reports]
 
-    Specify 'y' as the first argument to generate reports.
+    Specify 'y' as the first argument to save reports in the tmp directory,
+  	else full and summary reports are generated but not saved to a file.
 
 
 EOT
@@ -34,9 +35,11 @@ FULL_REPORT_FILE="$TMP_DIR/reports/full-codesniff.txt"
 SUMMARY_REPORT_FILE="$TMP_DIR/reports/summary-codesniff.txt"
 
 if [ -n "$1" ]; then
+	# Generate Full and Summary Reports and save to a file
 	COVERAGE="--report-full=$FULL_REPORT_FILE --report-summary=$SUMMARY_REPORT_FILE"
 else
-	COVERAGE="--report-full=$FULL_REPORT_FILE --report-summary=$SUMMARY_REPORT_FILE"
+	# Generate Full and Summary Reports but not to a file
+	COVERAGE="--report-full --report-summary"
 fi
 
 phpcs -p --extensions=php --standard=CakePHP $COVERAGE $DIR/Controller $DIR/Model $DIR/View $DIR/Lib
