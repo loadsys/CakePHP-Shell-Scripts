@@ -71,8 +71,6 @@ Only scripts that are set as executable will be auto-symlinked during a composer
 
 When making changes to the composer.json file included in this package, be sure to run `composer validate` to run a syntax check on the json file before committing.
 
-Eventually we should also publish this via packagist.org to make usage easier.
-
 
 ## Issues ##
 
