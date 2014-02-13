@@ -31,20 +31,20 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-FULL_REPORT_FILE="$TMP_DIR/reports/full-codesniff.txt"
-SUMMARY_REPORT_FILE="$TMP_DIR/reports/summary-codesniff.txt"
+FULL_REPORT_FILE="${TMP_DIR}/reports/full-codesniff.txt"
+SUMMARY_REPORT_FILE="${TMP_DIR}/reports/summary-codesniff.txt"
 
 if [ -n "$1" ]; then
 	# Generate Full and Summary Reports and save to a file
-	COVERAGE="--report-full=$FULL_REPORT_FILE --report-summary=$SUMMARY_REPORT_FILE"
+	COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
 else
 	# Generate Full and Summary Reports but not to a file
 	COVERAGE="--report-full --report-summary"
 fi
 
-phpcs -p --extensions=php --standard=CakePHP $COVERAGE $DIR/Controller $DIR/Model $DIR/View $DIR/Lib
+phpcs -p --extensions=php --standard=CakePHP ${COVERAGE} ${DIR}/Controller ${DIR}/Model ${DIR}/View ${DIR}/Lib
 
 if [ -n "$2" ]; then
-	echo "## Full report created at: $FULL_REPORT_FILE"
-	echo "## Summary report created at: $SUMMARY_REPORT_FILE"
+	echo "## Full report created at: ${FULL_REPORT_FILE}"
+	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
