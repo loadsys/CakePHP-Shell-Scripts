@@ -33,7 +33,7 @@ $backupDir = $dir . '/backups';
 $dbConfigFile = $dir . '/Config/database.php';
 $date = date('Ymd-His');
 include $dbConfigFile;
-$db = new DATABASE_CONFIG(); 
+$db = new DATABASE_CONFIG();
 
 // Create an appropriate password clause for the command line.
 if (empty($db->default['password'])) {
