@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Execute phpDocumentor with a standard config file.
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Convenience wrapper around phpDocumentor. Uses the Config/phpdoc.xml
+    file to control execution. Any additional arguments will be passed to
+    phpdoc itself. By default, HTML docs will be generated in tmp/docs/.
+    Depends on phpdoc.php being installed into bin/ via composer.
+
+Usage:
+    bin/${0##*/} [additional phpdoc args]
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+CFG_FILE="$DIR/Config/phpdoc.xml"
+
+bin/phpdoc.php --configuration="${CFG_FILE}" "$@"

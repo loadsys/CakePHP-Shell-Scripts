@@ -26,6 +26,7 @@
         "db-sample-data",
         "db-showupdates",
         "db-writeconfig",
+        "docs-generate",
         "email",
         "find-symlinks-to-in",
         "git-currentbranch",
