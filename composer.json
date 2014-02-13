@@ -36,6 +36,7 @@
         "migrations",
         "paths",
         "rename-empty",
+        "run-codesniffer",
         "run-tests",
         "set-configs",
         "set-owner",
