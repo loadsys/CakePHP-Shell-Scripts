@@ -10,6 +10,28 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 * Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
 
 
+## Requirements ##
+
+The following dependencies are assumed to be available on the target system and available in the default `PATH`.
+
+* `bash`
+* `php`
+* `composer`
+* `phpcs`
+* `phpunit`
+* `mysqldump`
+* `git`
+* `zip`
+* `mail`
+* `bin/phpdoc.php` (composer installed)
+* `bin/cake` (composer installed)
+
+* `realpath` (not available by default on OS X)
+* `readlink`
+
+
+If these items are not available, some scripts may not function as expected.
+
 ## Installation ##
 
 **WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project.

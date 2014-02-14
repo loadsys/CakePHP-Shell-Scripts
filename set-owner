@@ -31,13 +31,14 @@ if [ -n "$1" ]; then
 	ARG_OWNER=$1
 else
     # This works around the scripts being run elevated via `sudo`.
-	ARG_OWNER="$( ls -l ${DIR}/.. | grep $( basename $( pwd ) ) | awk '{ print $3 }' )"
+    # Can't use `stat -c|-f '%U %G' ./` because options are not standard across systems.
+	ARG_OWNER="$( \ls -l "${DIR}/.." | grep -v '^l' | grep " $(basename $( pwd ))\$" | awk '{ print $3 }' )"
 fi
 
 if [ -n "$2" ]; then
     ARG_GROUP=$2;
 else
-	ARG_GROUP="$( ls -l ${DIR}/.. | grep $( basename $( pwd ) ) | awk '{ print $4 }' )"
+	ARG_GROUP="$( \ls -l "${DIR}/.." | grep -v '^l' | grep " $( basename $( pwd ))\$" | awk '{ print $4 }' )"
 fi
 
 # Make the changes.

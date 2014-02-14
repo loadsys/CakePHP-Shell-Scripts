@@ -44,7 +44,7 @@ fi
 
 phpcs -p --extensions=php --standard=CakePHP ${COVERAGE} ${DIR}/Controller ${DIR}/Model ${DIR}/View ${DIR}/Lib
 
-if [ -n "$2" ]; then
+if [ -n "$1" ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
