@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Provides a shortcut syntax to discover multiple PEAR channels and install PEAR packages from them. Provide space-separated package names, optionally prefixed with their PEAR channel. If a channel is not provided, it is assumed it is already installed. For example:
+
+    bin/pear-install-deps PHP_CodeSniffer pear.phpunit.de:phpunit/PHPUnit
+
+Usage:
+    bin/${0##*/} [[channel1:]package1 ...]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+PEAR_OPTIONS="--alldeps"
+
+
+# Bail out if PEAR isn't available to us, or no arguments were provided.
+PEAR="$( which pear )"
+if [ $? -gt 0 ]; then
+	echo "!! The 'pear' commeand was not found on this system."
+	echo ""
+	exit 1
+fi
+if [ -z "$1" ]; then
+	usage
+fi
+
+## Define accumulators for channel list and package list.
+CHANNELS=()
+PACKAGES=()
+
+## Compile channels and packages into their own lists.
+for ARG in "$@"; do
+	IFS=":" read -a PAIR <<< "$ARG"
+	if [ "${PAIR[1]+isset}" ]; then
+		CHANNELS+=(${PAIR[0]})
+		PACKAGES+=(${PAIR[1]})
+	else
+		PACKAGES+=(${PAIR[0]})
+	fi
+done
+
+# Remove duplicates from each list.
+CHANNELS=($(printf "%s\n" "${CHANNELS[@]}" | sort -u))
+PACKAGES=($(printf "%s\n" "${PACKAGES[@]}" | sort -u))
+
+echo "## Channels to discover: ${CHANNELS[@]}"
+echo "## Packages to install: ${PACKAGES[@]}"
+
+# Discover all channels, if any, then update them.
+if [ "${#CHANNELS[@]}" -gt 0 ]; then
+	for CHANNEL in $CHANNELS; do
+		"$PEAR" channel-discover "$CHANNEL"
+	done
+
+	echo "## Updating channels."
+	"$PEAR" update-channels
+fi
+
+# Install all packages.
+if [ "${#PACKAGES[@]}" -gt 0 ]; then
+	for PACKAGE in $PACKAGES; do
+		"$PEAR" install $PEAR_OPTIONS "$PACKAGE"
+	done
+fi
+echo "## PEAR installations complete."
