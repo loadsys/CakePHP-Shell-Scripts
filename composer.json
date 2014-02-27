@@ -38,6 +38,7 @@
         "init-repo",
         "migrations",
         "paths",
+        "pear-install-deps",
         "rename-empty",
         "run-codesniffer",
         "run-tests",
