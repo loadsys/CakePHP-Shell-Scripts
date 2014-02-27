@@ -9,7 +9,7 @@ ${0##*/}
     Sets up a freshly-cloned copy of a project for local use. The script 
     is designed to be portable, without modification, between projects 
     that may or may not implement various features (like migrations or 
-    the seedshell) and call those components only if they are found to 
+    the seeds) and call those components only if they are found to 
     be available. It does however depend on a variety of subscripts 
     that should accompany it in the bin/ folder. Should be run from
     the project root folder.
