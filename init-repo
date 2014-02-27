@@ -9,7 +9,7 @@ ${0##*/}
     Sets up a freshly-cloned copy of a project for local use. The script 
     is designed to be portable, without modification, between projects 
     that may or may not implement various features (like migrations or 
-    the seedshell) and call those components only if they are found to 
+    the seeds) and call those components only if they are found to 
     be available. It does however depend on a variety of subscripts 
     that should accompany it in the bin/ folder. Should be run from
     the project root folder.
@@ -52,7 +52,9 @@ CONFIG_DIR="$DIR/Config"
 CAKE_DIR="$DIR/Lib/Cake"
 DEFAULT_DBUSER="root"
 DEFAULT_DBPASS=""
-DEFAULT_SEEDSHELL="$DIR/Console/Command/SeedShell.php"
+
+#@TODO: Refactor to use Seeds plugin (check for Config/Seed/ folder).
+DEFAULT_SEEDSHELL="$DIR/Plugin/Seeds/Console/Command/SeedShell.php"
 
 # Input processing.
 if [ -n "$5" ]; then
@@ -138,11 +140,11 @@ $BIN_DIR/db-loadschema
 # @TODO: Change this to assume the SeedsShell plugin. Run a grep on the Config/Seeds/ folder for files starting with our $ARG_ENV to know if there's anything to run.
 if [ -e "$DEFAULT_SEEDSHELL" ]; then
 	echo "## Found a SeedShell for populating sample data in the database."
-	$DIR/Console/cake seed fill
+	$DIR/Console/cake Seeds.seed fill
 	echo 'Would you like to seed the database with sample data? [y/n]:'
 	read ANSWER
 	if [ $ANSWER == 'y' ]; then
-		$DIR/Console/cake seed fill test
+		$DIR/Console/cake Seeds.seed fill test
 	fi
 else
 	echo "## No SeedShell is present. You will have to populate sample data in the database yourself."

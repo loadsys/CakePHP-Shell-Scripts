@@ -14,6 +14,14 @@ ${0##*/}
        Config/core.prod.php -> Config/core.php
        Config/database.prod.php -> Config/database.php
 
+	Note that "dashed" config files are loaded in place, not renamed.
+	So core-dev.php should be loaded by core.php when the APP_ENV=dev,
+	but this script would have to be used to copy core.dev.php to
+	core.php. The two methods are not entirely compatible since
+	core.php is probably configured to load core-dev.php in the former
+	case but would be overwritten by core.dev.php in the latter.
+
+
 Usage:
     bin/${0##*/} <ENV>
 
