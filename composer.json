@@ -39,6 +39,8 @@
         "migrations",
         "paths",
         "pear-install-deps",
+        "pear-package-installed",
+        "pear-package-installed-dumb",
         "rename-empty",
         "run-codesniffer",
         "run-tests",
