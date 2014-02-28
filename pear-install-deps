@@ -24,7 +24,6 @@ fi
 
 PEAR_OPTIONS="--alldeps"
 
-
 # Bail out if PEAR isn't available to us, or no arguments were provided.
 PEAR="$( which pear )"
 if [ $? -gt 0 ]; then
@@ -55,23 +54,29 @@ done
 CHANNELS=($(printf "%s\n" "${CHANNELS[@]}" | sort -u))
 PACKAGES=($(printf "%s\n" "${PACKAGES[@]}" | sort -u))
 
-echo "## Channels to discover: ${CHANNELS[@]}"
-echo "## Packages to install: ${PACKAGES[@]}"
-
 # Discover all channels, if any, then update them.
 if [ "${#CHANNELS[@]}" -gt 0 ]; then
-	for CHANNEL in $CHANNELS; do
-		"$PEAR" channel-discover "$CHANNEL"
+	echo "## ${#CHANNELS[@]} channels to discover: ${CHANNELS[@]}"
+	for CHANNEL in "${CHANNELS[@]}"; do
+		echo "## Discovering '$CHANNEL'"
+		"$PEAR" channel-discover $CHANNEL
 	done
 
 	echo "## Updating channels."
 	"$PEAR" update-channels
 fi
 
-# Install all packages.
+# Install all packages. If any of these fail, the whole script has "failed".
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
-	for PACKAGE in $PACKAGES; do
-		"$PEAR" install $PEAR_OPTIONS "$PACKAGE"
+	echo "## ${#PACKAGES[@]} packages to install: ${PACKAGES[@]}"
+	for PACKAGE in "${PACKAGES[@]}"; do
+		if ./pear-package-installed-dumb "$PACKAGE" "$CHANNEL"; then
+			echo "## Package '$PACKAGE' seems to already be installed. Skipping."
+			continue
+		else
+			echo "## Installing '$PACKAGE'"
+			"$PEAR" install $PEAR_OPTIONS "$PACKAGE"
+		fi
 	done
 fi
 echo "## PEAR installations complete."
