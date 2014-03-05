@@ -37,9 +37,9 @@ DIRLISTFILE=writedirs.txt
 DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
 CONFIG_DIR="$DIR/Config";
 
-if [ -s $CONFIG_DIR/$DIRLISTFILE ]
+if [ -s "$CONFIG_DIR/$DIRLISTFILE" ]
 then
-	echo "## Processing ${DIRLISTFILE} for writable directories."
+	echo "## Processing '${DIRLISTFILE}' for writable directories."
 	while read F ; do
 		#echo $F  # Debugging.
 		chmod -R 777 $DIR/$F
