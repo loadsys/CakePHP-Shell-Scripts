@@ -25,16 +25,19 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-
 umask a+rw
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
+REPORT_DIR="${TMP_DIR}/reports"
 
-FULL_REPORT_FILE="${TMP_DIR}/reports/full-codesniff.txt"
-SUMMARY_REPORT_FILE="${TMP_DIR}/reports/summary-codesniff.txt"
+FULL_REPORT_FILE="${REPORT_DIR}/full-codesniff.txt"
+SUMMARY_REPORT_FILE="${REPORT_DIR}/summary-codesniff.txt"
 SNIFF_FOLDERS=("${DIR}/Controller" "${DIR}/Model" "${DIR}/View" "${DIR}/Lib")
+
+test -n "$1"
+SAVE_REPORTS=$?
 
 # Bail out if phpcs isn't available to us
 PHPCS="$( which phpcs )"
@@ -47,19 +50,20 @@ if [ $? -gt 0 ]; then
 	echo ""
 	exit 1
 fi
+echo "## Found phpcs at: ${PHPCS}"
 
-if [ -n "$1" ]; then
-	# Generate Full and Summary Reports and save to a file
+if [ $SAVE_REPORTS ]; then
+	# Generate Full and Summary Reports and save to a file.
 	COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
+	mkdir -p "$REPORT_DIR"
 else
-	# Generate Full and Summary Reports but not to a file
+	# Generate Full and Summary Reports but print to screen.
 	COVERAGE="--report-full --report-summary"
 fi
 
 $PHPCS -p --extensions=php --standard=CakePHP ${COVERAGE} ${SNIFF_FOLDERS[@]}
 
-#@TODO: Need to check $? exit code from phpcs and only display this report if the code sniff succeeded.
-if [ -n "$1" && $? -eq 0 ]; then
+if [ $SAVE_REPORTS ] && [ $? -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
