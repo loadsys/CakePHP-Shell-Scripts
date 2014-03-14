@@ -35,7 +35,7 @@ if [ "$1" = '-h' ]; then
 fi
 
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 CONFIG_DIR="$DIR/Config";
 
 # Copy config files in place

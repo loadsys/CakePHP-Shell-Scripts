@@ -46,7 +46,7 @@ fi
 
 
 # Variable initialization.
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="$DIR/bin"
 CONFIG_DIR="$DIR/Config"
 CAKE_DIR="$DIR/Lib/Cake"

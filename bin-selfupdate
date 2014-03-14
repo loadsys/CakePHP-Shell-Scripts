@@ -26,7 +26,7 @@ if [ "$1" = '-h' ]; then
 fi
 
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="$DIR/bin"
 
 # if [ -n "$1" ]; then

@@ -37,7 +37,7 @@ fi
 echo "## Starting update process."
 
 # Set variables.
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="$DIR/bin"
 CONFIG_DIR="$DIR/Config"
 MIGRATION_DIR="$CONFIG_DIR/Migration"

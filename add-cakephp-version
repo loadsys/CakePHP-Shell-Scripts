@@ -34,7 +34,7 @@ fi
 
 umask a+rw
 
-DIR="$( cd -P "$( dirname "$0" )" && pwd )";
+DIR="$( cd -P "$( dirname "$0" )" >/dev/null 2>&1 && pwd )";
 TMPDIR="${DIR}/tmp"
 REPO=git://github.com/cakephp/cakephp.git
 REUSE_REPO=1  # Change this to 0 to force the script to clone the whole cakephp repo every time.

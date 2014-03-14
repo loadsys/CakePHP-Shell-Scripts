@@ -28,7 +28,7 @@ DIRLISTFILE=writedirs.txt
 
 #TODO: In future versions, the script could look for an argument ($1) or an environment variable to control which file to read from instead of the hardcoded value above. This would make it more compatible with the updatewritedirs script.
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )";
 CONFIG_DIR="$DIR/Config";
 
 # Find any writeable dirs (only root dirs) and append them (for now) to the writedirs.txt file.

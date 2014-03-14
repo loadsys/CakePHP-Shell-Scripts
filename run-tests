@@ -26,7 +26,7 @@ fi
 
 umask a+rw
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
 PHPUNIT_CONFIG="$DIR/Config/phpunit.xml"
