@@ -33,6 +33,7 @@ PHPUNIT_CONFIG="$DIR/Config/phpunit.xml"
 
 if [ -n "$1" ]; then
 	TESTCASE=$1
+	shift  # Knock off the first argument to this script so the rest will be passed to the TestShell.
 else
 	TESTCASE="All"
 fi
