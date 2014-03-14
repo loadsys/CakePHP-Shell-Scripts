@@ -28,11 +28,25 @@ fi
 
 umask a+rw
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
+
 FULL_REPORT_FILE="${TMP_DIR}/reports/full-codesniff.txt"
 SUMMARY_REPORT_FILE="${TMP_DIR}/reports/summary-codesniff.txt"
+SNIFF_FOLDERS=("${DIR}/Controller" "${DIR}/Model" "${DIR}/View" "${DIR}/Lib")
+
+# Bail out if phpcs isn't available to us
+PHPCS="$( which phpcs )"
+if [ $? -gt 0 ]; then
+	PHPCS="$BIN_DIR/phpcs"
+	test -x $PHPCS
+fi
+if [ $? -gt 0 ]; then
+	echo "!! The 'phpcs' command was not found on this system."
+	echo ""
+	exit 1
+fi
 
 if [ -n "$1" ]; then
 	# Generate Full and Summary Reports and save to a file
@@ -42,9 +56,10 @@ else
 	COVERAGE="--report-full --report-summary"
 fi
 
-phpcs -p --extensions=php --standard=CakePHP ${COVERAGE} ${DIR}/Controller ${DIR}/Model ${DIR}/View ${DIR}/Lib
+$PHPCS -p --extensions=php --standard=CakePHP ${COVERAGE} ${SNIFF_FOLDERS[@]}
 
-if [ -n "$1" ]; then
+#@TODO: Need to check $? exit code from phpcs and only display this report if the code sniff succeeded.
+if [ -n "$1" && $? -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
