@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Convenience wrapper that runs "update" commands for all common dependency management tools (currently git submodules, composer, npm and pear.) "Update" means slightly different things in each context, but at the end of this script execution, the goal is for all configured dependencies to be updated to the latest available version (as allowed by config). 
+
+    Used by the init-repo and update scripts.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+BINDIR="${DIR}/bin"
+
+echo "## Clearing cache folders.";
+$BINDIR/git-submodules
+composer update
+npm update
+pear update
+

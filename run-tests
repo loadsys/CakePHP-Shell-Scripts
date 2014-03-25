@@ -29,7 +29,7 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-PHPUNIT_CONFIG="$DIR/Config/phpunit.xml"
+PHPUNIT_CONFIG="Config/phpunit.xml"
 
 if [ -n "$1" ]; then
 	TESTCASE=$1
@@ -38,5 +38,9 @@ else
 	TESTCASE="All"
 fi
 
-$BIN_DIR/clear-cache
-$BIN_DIR/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
+bin/clear-cache
+if [ -e '.vagrant' ]; then
+	vagrant ssh -c "cd /var/www; Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
+else
+	Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
+fi

@@ -6,9 +6,20 @@ usage ()
 	cat <<EOT
 
 ${0##*/}  
-    Provides a shortcut syntax to discover multiple PEAR channels and install PEAR packages from them. Provide space-separated package names, optionally prefixed with their PEAR channel. If a channel is not provided, it is assumed it is already installed. For example:
+    Provides a shortcut syntax to discover multiple PEAR channels
+    and install PEAR packages from them. Provide space-separated
+    package names, optionally prefixed with their PEAR channel. If
+    a channel is not provided, it is assumed it is already
+    installed. For example:
 
     bin/pear-install-deps PHP_CodeSniffer pear.phpunit.de:phpunit/PHPUnit
+
+    If no packages are supplied on the command line, a default
+    config file is used that lists packages one per line. If that
+    file is also not present or readable, the script exits with
+    a non-zero status.
+
+    Will exit non-zero if \`pear\` is not found in \$PATH.
 
 Usage:
     bin/${0##*/} [[channel1:]package1 ...]
@@ -23,16 +34,18 @@ if [ "$1" = '-h' ]; then
 fi
 
 PEAR_OPTIONS="--alldeps"
+PEAR_PACKAGES_FILE="$DIR/Config/pear_packages.txt"
 
 # Bail out if PEAR isn't available to us, or no arguments were provided.
 PEAR="$( which pear )"
 if [ $? -gt 0 ]; then
-	echo "!! The 'pear' commeand was not found on this system."
+	echo "!! The 'pear' command was not found on this system."
 	echo ""
 	exit 1
 fi
 if [ -z "$1" ]; then
 	usage
+	#@TODO: Check for $PEAR_PACKAGES_FILE. If present, populate $@ from it. Otherwise `exit 1`.
 fi
 
 ## Define accumulators for channel list and package list.
