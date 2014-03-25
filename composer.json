@@ -26,6 +26,8 @@
         "db-sample-data",
         "db-showupdates",
         "db-writeconfig",
+        "deps-install",
+        "deps-update",
         "docs-generate",
         "email",
         "env-vars-echo",
