@@ -23,7 +23,7 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 CFG_FILE="$DIR/Config/phpdoc.xml"
 
 bin/phpdoc.php --configuration="${CFG_FILE}" "$@"

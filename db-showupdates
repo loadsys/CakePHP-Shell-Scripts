@@ -27,7 +27,7 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )"
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 SQLFILE="$DIR/Config/sql/db_updates.sql"
 TMP_A="$DIR/tmp/db_updates.a.sql"
 TMP_B="$DIR/tmp/db_updates.b.sql"

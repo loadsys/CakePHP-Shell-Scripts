@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Convenience wrapper that runs "install" commands for all common dependency management tools (currently git submodules, composer, npm and pear.) "Install" means slightly different things in each context, but at the end of this script execution, the goal is for all configured dependencies to be present at the configured version level. 
+
+    Used by the init-repo and update scripts.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+BINDIR="${DIR}/bin"
+
+echo "## Running installs for all dependency management tools found.";
+$BINDIR/git-submodules
+composer install
+npm install
+$BINDIR/pear-install-deps
+
+

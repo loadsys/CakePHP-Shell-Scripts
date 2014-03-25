@@ -93,9 +93,9 @@ The above changes the active commit for the submoduled bin repo, which will then
 
 There currently is not a convenient way to set up a test harness around this repo.
 
-1. The best thing to do is to clone this repo (or a fork) into the `bin/` folder of an existing and establish project so you have something to test against.
+1. The best thing to do is to clone this repo (or a fork) into the `bin/` folder of an existing and established project so you have something to test against.
 1. Make your edits to the scripts as necessary and commit to a feature branch.
-1. if you have **added* new scripts, make sure they are executable and run `./composer-binaries` to update the composer.json file automatically (you should be using PHP 5.4 to make proper use of the `JSON_PRETTY_PRINT` flag).
+1. If you have **added** new scripts, make sure they are executable and run `./composer-binaries` to update the composer.json file automatically (you should be using PHP 5.4 to make proper use of the `JSON_PRETTY_PRINT` flag).
 1. Run `composer validate` to run a syntax check on the json file.
 1. Submit a pull request for your branch.
 
