@@ -16,14 +16,16 @@ ${0##*/}
 Usage:
     bin/${0##*/} [tag|branch|sha|ref] [dev|prod|staging] [user] [group]
 
-	$1 = The new commit to update to. Default: 'origin/master'
-	$2 = The local config file "environment" to use. Default: 'prod'
-	$3 = The local user to associate the project with. Default: owner of ./
-	$4 = The local group to associate the project with. Default: group of ./
+    \$1 = The new commit to update to. Default: 'origin/master'
+    \$2 = The local config file "environment" to use. Default: $APP_ENV if set, 'prod' if not.
+    \$3 = The local user to associate the project with. Default: owner of ./
+    \$4 = The local group to associate the project with. Default: group of ./
 
 Environment Variables:
-	LOADSYS_EMAIL = If set, an email report for the update run will be 
-					generated and sent to the email address contained within.
+          APP_ENV = If set and \$2 is blank, will be used as the active
+                    environment for the update run.
+    LOADSYS_EMAIL = If set, an email report for the update run will be
+                    generated and sent to the email address contained within.
 
 EOT
 
@@ -68,6 +70,8 @@ fi
 
 if [ $2 ]; then
 	ARG_APPENV="$2"
+elif [ -n "$APP_ENV" ]; then
+	ARG_APPENV="$APP_ENV"
 else
 	ARG_APPENV="prod"
 fi
@@ -171,8 +175,8 @@ fi
 $BIN_DIR/set-configs $ARG_APPENV
 
 
-# Make any changes to submodules specified by the repo.
-$BIN_DIR/git-submodules
+# Make sure any external packages are installed and available.
+$BIN_DIR/deps-install
 
 
 # Purge cache folders.

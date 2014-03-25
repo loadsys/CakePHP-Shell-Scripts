@@ -6,7 +6,16 @@ usage ()
 	cat <<EOT
 
 ${0##*/}  
-    Convenience wrapper that runs "update" commands for all common dependency management tools (currently git submodules, composer, npm and pear.) "Update" means slightly different things in each context, but at the end of this script execution, the goal is for all configured dependencies to be updated to the latest available version (as allowed by config). 
+    Convenience wrapper that runs "update" commands for all common
+    dependency management tools (currently git submodules, composer,
+    npm and pear.) "Update" means slightly different things in each
+    context, but at the end of this script execution, the goal is
+    for all configured dependencies to be updated to the latest
+    available version (as allowed by config).
+
+    This is typically used in a development environment only. In
+    live environments, one would only want to \`install\` configured
+    dependencies, not change their versions.
 
     Used by the init-repo and update scripts.
 
@@ -25,10 +34,48 @@ fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BINDIR="${DIR}/bin"
+PEAR_PACKAGES_FILE="$DIR/Config/pear_packages.txt"
+COMPOSER_CONFIG_FILE="$DIR/composer.json"
+NPM_CONFIG_FILE="$DIR/package.json"
 
-echo "## Clearing cache folders.";
-$BINDIR/git-submodules
-composer update
-npm update
-pear update
 
+echo "## Updating all dependencies.";
+
+# Update git submodules
+"$BINDIR/git-submodules"
+
+# Install PEAR packages if config file is present.
+if [ -e "$PEAR_PACKAGES_FILE" ]; then
+	PEAR="$( which pear )"
+	if [ $? -gt 0 ]; then
+		echo "!! Found pear config file '$PEAR_PACKAGES_FILE', but pear is not present on this system."
+		exit 1
+	else
+		echo "## Found pear at: ${PEAR}. Using config file: '$PEAR_PACKAGES_FILE'"
+		"$PEAR" upgrade -o
+	fi
+fi
+
+# Update composer packages using versions specified in config file.
+if [ -e "$COMPOSER_CONFIG_FILE" ]; then
+	COMPOSER="$( which composer )"
+	if [ $? -gt 0 ]; then
+		echo "!! Found composer config file '$COMPOSER_CONFIG_FILE', but composer is not present on this system."
+		exit 2
+	else
+		echo "## Found composer at: ${COMPOSER}"
+		"$COMPOSER" update --no-interaction
+	fi
+fi
+
+# Update npm modules using versions specified in config file.
+if [ -e "$NPM_CONFIG_FILE" ]; then
+	NPM="$( which npm )"
+	if [ $? -gt 0 ]; then
+		echo "!! Found npm config file '$NPM_CONFIG_FILE', but npm is not present on this system."
+		exit 3
+	else
+		echo "## Found npm at: ${NPM}"
+		"$NPM" update
+	fi
+fi
