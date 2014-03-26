@@ -33,19 +33,43 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
+function get_channel_for_package() {
+	for ARG in "${ARGS[@]}"; do
+		ARG=${ARG/:$1}
+		if ! [[ $ARG =~ ':' ]]; then  # If we stripped a colon, we have a match.
+			CHANNEL=$ARG
+			return 0
+		fi
+	done
+	CHANNEL=''
+	return 1
+}
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+THIS_DIR="$( cd -P "$( dirname "$0" )"/. >/dev/null 2>&1 && pwd )"
 PEAR_OPTIONS="--alldeps"
 PEAR_PACKAGES_FILE="$DIR/Config/pear_packages.txt"
 
-# Bail out if PEAR isn't available to us, or no arguments were provided.
+# Bail out if PEAR isn't available to us.
 PEAR="$( which pear )"
 if [ $? -gt 0 ]; then
 	echo "!! The 'pear' command was not found on this system."
 	echo ""
 	exit 1
 fi
+
+# If no args provided, try reading the config file.
 if [ -z "$1" ]; then
-	usage
-	#@TODO: Check for $PEAR_PACKAGES_FILE. If present, populate $@ from it. Otherwise `exit 1`.
+	if [ -s "$PEAR_PACKAGES_FILE" ]; then
+		echo "## Loading channels/packages from '$PEAR_PACKAGES_FILE'."
+		mapfile -t ARGS < <( cat "$PEAR_PACKAGES_FILE" )
+	else
+		echo "!! No arguments provided, and no/empty config file at '$PEAR_PACKAGES_FILE'."
+		echo ""
+		exit 2
+	fi
+else
+	ARGS=$@
 fi
 
 ## Define accumulators for channel list and package list.
@@ -53,7 +77,7 @@ CHANNELS=()
 PACKAGES=()
 
 ## Compile channels and packages into their own lists.
-for ARG in "$@"; do
+for ARG in "${ARGS[@]}"; do
 	IFS=":" read -a PAIR <<< "$ARG"
 	if [ "${PAIR[1]+isset}" ]; then
 		CHANNELS+=(${PAIR[0]})
@@ -83,7 +107,8 @@ fi
 if [ "${#PACKAGES[@]}" -gt 0 ]; then
 	echo "## ${#PACKAGES[@]} packages to install: ${PACKAGES[@]}"
 	for PACKAGE in "${PACKAGES[@]}"; do
-		if ./pear-package-installed-dumb "$PACKAGE" "$CHANNEL"; then
+		get_channel_for_package $PACKAGE  # Sets $CHANNEL
+		if "$THIS_DIR/pear-package-installed-dumb" "$PACKAGE" "$CHANNEL"; then
 			echo "## Package '$PACKAGE' seems to already be installed. Skipping."
 			continue
 		else

@@ -12,9 +12,9 @@ ${0##*/}
     is NOT installed. Will exit with 2 if the 'pear' executable
     is not available.
 
-	This is the ugly way to accomplish this, but the "right"
-	way in 'pear-installed-package' won't work because PEAR's
-	source code is super crusty.
+    This is the ugly way to accomplish this, but the "right"
+    way in 'pear-installed-package' won't work because PEAR's
+    source code is super crusty.
 
 Usage:
     bin/${0##*/} package [channel]
@@ -31,7 +31,7 @@ fi
 # Bail out if PEAR isn't available to us, or no arguments were provided.
 PEAR="$( which pear )"
 if [ $? -gt 0 ]; then
-	echo "!! The 'pear' commeand was not found on this system."
+	echo "!! The 'pear' command was not found on this system."
 	echo ""
 	exit 2
 fi
