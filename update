@@ -123,7 +123,7 @@ echo "## Pulling changes from remote repo.";
 # Example: git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 #git fetch --tags
 
-git fetch origin
+git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 
 
 # Apply database updates, one way or another.
