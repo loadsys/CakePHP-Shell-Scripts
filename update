@@ -16,10 +16,15 @@ ${0##*/}
 Usage:
     bin/${0##*/} [tag|branch|sha|ref] [dev|prod|staging] [user] [group]
 
-    \$1 = The new commit to update to. Default: 'origin/master'
-    \$2 = The local config file "environment" to use. Default: $APP_ENV if set, 'prod' if not.
-    \$3 = The local user to associate the project with. Default: owner of ./
-    \$4 = The local group to associate the project with. Default: group of ./
+    \$1 = The new commit to which to update.
+          Will be merged into the current branch/commit.
+          Default: (The remote tracking branch for the currently-checked-out branch.)
+    \$2 = The local config file "environment" to use.
+          Default: $APP_ENV if set, 'prod' if not.
+    \$3 = The local user to associate the project with.
+          Default: owner of ./
+    \$4 = The local group to associate the project with.
+          Default: group of ./
 
 Environment Variables:
           APP_ENV = If set and \$2 is blank, will be used as the active
@@ -46,6 +51,8 @@ MIGRATION_DIR="$CONFIG_DIR/Migration"
 SLEEP_TIME=10
 DEFAULT_DBUPDATES_FILE="$CONFIG_DIR/sql/db_updates.sql"
 DEFAULT_ENVVARS_FILE="$CONFIG_DIR/env_vars.txt"
+EXISTINGCOMMIT=$( git rev-parse HEAD )
+EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
 
 if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
 	DB_UPDATES_METHOD='migrations'
@@ -64,8 +71,8 @@ fi
 if [ $1 ]; then
 	ARG_NEWCOMMIT=$1
 else
-	#@TODO: This should really default to the remote tracked version of $EXISTINGBRANCH (which is currently set later), so that we can fast-forward on the same branch by default. So if $EXISTINGBRANCH is "master", then $ARG_NEWCOMMIT should (typically) be "origin/master".
-	ARG_NEWCOMMIT="origin/master"
+	#Ref: http://stackoverflow.com/a/9753364/70876
+	ARG_NEWCOMMIT=$( git rev-parse --abbrev-ref --symbolic-full-name @{u} )
 fi
 
 if [ $2 ]; then
@@ -110,8 +117,6 @@ read -t ${SLEEP_TIME} NOTUSED
 
 
 # Save the "current" commit for later.
-EXISTINGCOMMIT=$( git rev-parse HEAD )
-EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
 echo "## Current commit is $EXISTINGBRANCH ($EXISTINGCOMMIT)";
 
 
