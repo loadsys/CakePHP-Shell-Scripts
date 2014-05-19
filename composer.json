@@ -9,7 +9,11 @@
         }
     ],
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "phpunit/phpunit": "3.7.*",
+        "phpdocumentor/phpdocumentor": "2.*@beta",
+        "squizlabs/php_codesniffer": "1.*",
+        "loadsys/loadsys_codesniffer": "0.*"
     },
     "config": {
         "bin-dir": "bin"
@@ -45,6 +49,7 @@
         "pear-package-installed-dumb",
         "rename-empty",
         "run-codesniffer",
+        "run-in-vagrant",
         "run-tests",
         "set-configs",
         "set-owner",
