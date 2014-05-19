@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Executes the provided arguments inside the current vagrant VM,
+    if present. Otherwise just executes the arguments. The entire
+    command string MUST be quoted. All paths used must be relative
+    to the root project folder shared between the host and VM.
+
+Usage:
+    bin/${0##*/} "Command [--with args]"
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+echo "@TODO: WIP"
+exit 1
+
+
+if mount | grep -q '^/vagrant'; then
+	vagrant ssh -c "cd /vagrant; $@"
+else
+	eval "$@"
+fi
