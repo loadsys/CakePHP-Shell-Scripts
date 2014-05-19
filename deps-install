@@ -60,6 +60,7 @@ if [ -e "$COMPOSER_CONFIG_FILE" ]; then
 	else
 		echo "## Found composer at: ${COMPOSER}"
 		"$COMPOSER" install --no-interaction
+		"$COMPOSER" dumpautoload --optimize
 	fi
 fi
 
