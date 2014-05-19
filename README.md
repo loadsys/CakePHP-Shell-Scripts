@@ -15,28 +15,31 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 The following dependencies are assumed to be available on the target system and available in the default `PATH`.
 
 * `bash`
-* `php`
 * `composer`
-* `phpcs`
-* `phpunit`
-* `mysqldump`
 * `git`
-* `zip`
 * `mail`
-* `bin/phpdoc.php` (composer installed)
-* `bin/cake` (composer installed)
-
+* `mysqldump`
+* `pear`
+* `php`
 * `realpath` (not available by default on OS X)
 * `readlink`
+* `zip`
 
+Additionally, some scripts expect additional tools that should be automatically installed as composer dependencies to _this_ package:
+
+* `bin/phpcs`
+* `bin/phpunit`
+* `bin/phpdoc.php`
+* `bin/cake` (composer installed **by target project**)
 
 If these items are not available, some scripts may not function as expected.
+
 
 ## Installation ##
 
 **WARNING!** These scripts are currently only compatible with Cake 2.x. Don't try to use them on a 1.x project.
 
-## composer ##
+### composer ###
 
 Your project's own `composer.json` file should look something like this:
 
@@ -54,7 +57,7 @@ Then run `composer install` to pull this repo into your project. A `bin/` folder
 
 **Note**: The `bin-dir` is non-standard and may cause conflicts with other composer packages that install "binaries". These scripts are all expect to live in `PROJECT_ROOT/bin` though so don't expect anything to work if you forgo the `bin-dir` setting in your project.
 
-## git submodule ##
+### git submodule ###
 
 (This is the old method and will eventually be retired.)
 

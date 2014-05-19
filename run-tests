@@ -39,8 +39,8 @@ else
 fi
 
 bin/clear-cache
-if [ -e '.vagrant' ]; then
-	vagrant ssh -c "cd /var/www; Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
-else
+if mount | grep -q '^/vagrant'; then
 	Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
+else
+	vagrant ssh -c "cd /var/www; Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
 fi
