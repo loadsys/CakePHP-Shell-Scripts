@@ -22,12 +22,18 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-echo "@TODO: WIP"
-exit 1
-
-
-if mount | grep -q '^/vagrant'; then
+VAGRANT_EXEC=$( which vagrant )
+VAGRANT_PRESENT=$?
+if [ $VAGRANT_PRESENT -eq 0 ] && ! mount | grep -q '^/vagrant'; then
+	echo '## Running command in vagrant.'
 	vagrant ssh -c "cd /vagrant; $@"
 else
+	echo '## Running command natively.'
 	eval "$@"
 fi
+
+# Logic matrix:
+# vagrant installed + outside vm (no /vagrant mount point) = run in vagrant
+# vagrant installed + inside vm = run native
+# no vagrant + outside vm = run native
+# no vagrant + inside vm = run native
