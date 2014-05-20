@@ -39,7 +39,8 @@ else
 fi
 
 bin/clear-cache
-if mount | grep -q '^/vagrant'; then
+VAGRANT_EXEC=$( which vagrant )
+if mount | grep -q '^/vagrant' || $?; then  # @TODO: **OR** if command `vagrant` not found, run it directly!
 	Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
 else
 	vagrant ssh -c "cd /var/www; Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
