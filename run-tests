@@ -39,8 +39,4 @@ else
 fi
 
 bin/clear-cache
-if mount | grep -q '^/vagrant'; then
-	Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@"
-else
-	vagrant ssh -c "cd /var/www; Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
-fi
+bin/run-in-vagrant "Console/cake test app $TESTCASE --configuration="${PHPUNIT_CONFIG}" "$@""
