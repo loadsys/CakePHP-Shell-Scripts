@@ -32,6 +32,11 @@ else
 	eval "$@"
 fi
 
+# It is important that the last command is either the `vagrant ssh`
+# or the `eval ...` so that the exit code of **this** script
+# is the exit code from those calls.
+
+
 # Logic matrix:
 # vagrant installed + outside vm (no /vagrant mount point) = run in vagrant
 # vagrant installed + inside vm = run native
