@@ -5,10 +5,10 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Convenience wrapper to run any pending Migrations. Takes an optional 
-    Migrations COMMAND (defaults to "run all") and an optional plugin 
-    for which to execute migrations. Should be run from the project 
+${0##*/}
+    Convenience wrapper to run any pending Migrations. Takes an optional
+    Migrations COMMAND (defaults to "run all") and an optional plugin
+    for which to execute migrations. Should be run from the project
     root folder.
 
 Usage:

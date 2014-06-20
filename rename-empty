@@ -5,10 +5,10 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Recursively renames any files named "empty" to '.gitkeep". If you do 
-    not want to act on the entire git root directory, pass in a local 
-    path as the first argument. Should be run from the project root 
+${0##*/}
+    Recursively renames any files named "empty" to '.gitkeep". If you do
+    not want to act on the entire git root directory, pass in a local
+    path as the first argument. Should be run from the project root
     folder.
 
 Usage:

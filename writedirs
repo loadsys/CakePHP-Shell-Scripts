@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 #
-# 
 #
 #  beporter@users.sourceforge.net
 
@@ -9,11 +8,11 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Looks for a local file called writedirs.txt and attempts to make 
-    the list of directories it contains writable recursively. If it 
-    fails to find or read that file, or if it is empty, it will fall 
-    back to setting the tmp/ dir as writeable. Should be run from 
+${0##*/}
+    Looks for a local file called writedirs.txt and attempts to make
+    the list of directories it contains writable recursively. If it
+    fails to find or read that file, or if it is empty, it will fall
+    back to setting the tmp/ dir as writeable. Should be run from
     the project root folder.
 
 Usage:

@@ -5,10 +5,10 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Convenience wrapper to determine if there are any uncomitted changes 
-    to the local working copy that would disrupt a git pull. Exits 0 
-    if the working directory is clean. If there are differences, prints 
+${0##*/}
+    Convenience wrapper to determine if there are any uncomitted changes
+    to the local working copy that would disrupt a git pull. Exits 0
+    if the working directory is clean. If there are differences, prints
     a summary of the uncommited changes and exits 1.
 
 Usage:

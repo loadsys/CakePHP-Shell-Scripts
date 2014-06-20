@@ -5,8 +5,8 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Uses Cake's Config/database.php file to start a command line 
+${0##*/}
+    Uses Cake's Config/database.php file to start a command line
     mysql session with the correct host, database, user and password.
     Should be run from the project root folder.
 

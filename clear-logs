@@ -5,9 +5,9 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
+${0##*/}
     Clears files from Cake's logs directory. Really only needed to
-    recover disk space from aggressive logs. Should be run 
+    recover disk space from aggressive logs. Should be run
     from the project root folder.
 
 Usage:

@@ -5,15 +5,15 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Runs the necessary local commands to switch branches and/or 
-    update the bin/ submodule repo to the latest release. Afterwards, 
+${0##*/}
+    Runs the necessary local commands to switch branches and/or
+    update the bin/ submodule repo to the latest release. Afterwards,
     you should commit the changes in the parent project's repo.
 
 Usage:
     bin/${0##*/} [branch]
-    
-    Provide an optional branch from the CakePHP-Shell-Scripts repo 
+
+    Provide an optional branch from the CakePHP-Shell-Scripts repo
     you'd like to use. Defaults to 'master' for Cake 2+.
 
 
@@ -24,7 +24,6 @@ EOT
 if [ "$1" = '-h' ]; then
 	usage
 fi
-
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="$DIR/bin"
@@ -56,5 +55,5 @@ if [ $? -gt 0 ]; then
 	exit 1    # Exits non-zero updates had to be applied.
 else
 	echo "## No changes to apply to the bin/ submodule."
-	exit 0 
+	exit 0
 fi

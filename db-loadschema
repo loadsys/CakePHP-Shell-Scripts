@@ -5,9 +5,9 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Determines the active schema management tool in use (CakeDC 
-    Migrations plugin, Cake Schema Shell, or old-fashioned schema.sql 
+${0##*/}
+    Determines the active schema management tool in use (CakeDC
+    Migrations plugin, Cake Schema Shell, or old-fashioned schema.sql
     file) and attempts to load the schema into the default database.
     Should be run from the project root folder.
 

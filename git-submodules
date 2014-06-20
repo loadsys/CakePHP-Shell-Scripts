@@ -5,8 +5,8 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Convenience wrapper to initialize and update all git submodules. 
+${0##*/}
+    Convenience wrapper to initialize and update all git submodules.
     Should be run from the project root folder.
 
 Usage:

@@ -5,10 +5,10 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Creates a symlink for the current project to the provided Cake 
-    core as Lib/Cake, provided a real Cake core isn't present. 
-    Overwrites an existing symlink if present. Should be run from 
+${0##*/}
+    Creates a symlink for the current project to the provided Cake
+    core as Lib/Cake, provided a real Cake core isn't present.
+    Overwrites an existing symlink if present. Should be run from
     the project root folder.
 
 Usage:
@@ -55,7 +55,7 @@ fi
 
 # Check to make sure the parent directory (Lib/) exists. (New projects might not have it unless there is already a .gitkeep file inside!)
 DIR_PARENT=$( dirname "${CORE_LINK}" )
-		
+
 if [ ! -d "${DIR_PARENT}" ]; then
 	echo "## Creating missing parent directory: ${DIR_PARENT}"
 	mkdir -p ${DIR_PARENT}

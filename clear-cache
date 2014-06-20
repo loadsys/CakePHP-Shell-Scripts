@@ -5,9 +5,9 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Clears files from known Cake tmp directories. In particular, 
-    should be run after database schema changes. Should be run 
+${0##*/}
+    Clears files from known Cake tmp directories. In particular,
+    should be run after database schema changes. Should be run
     from the project root folder.
 
 Usage:

@@ -5,10 +5,10 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Sets the filesystem owner and group recursively from the project 
-    root folder. Uses the provided command line arguments if present, 
-    otherwise defaults to the owner and group set for the project 
+${0##*/}
+    Sets the filesystem owner and group recursively from the project
+    root folder. Uses the provided command line arguments if present,
+    otherwise defaults to the owner and group set for the project
     root folder. Should be run from the project root folder.
 
 Usage:

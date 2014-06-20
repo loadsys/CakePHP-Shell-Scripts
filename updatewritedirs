@@ -5,8 +5,8 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Scans the project's directory structure for writeable directories, 
+${0##*/}
+    Scans the project's directory structure for writeable directories,
     and merges what it finds into the writedirs.txt configuration file.
 	Should be run from the project root folder.
 

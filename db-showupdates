@@ -5,14 +5,14 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Takes at least one git commit SHA hash and compares the 
-    Config/sql/db_updates.sql file in older (non-Migrations) projects 
-    to either the second commit SHA if provided, or the "HEAD" commit. 
-    The output is the difference between the files. Practically, this 
-    will be any SQL commands added to the bottom of the file, 
-    indicating they need to be applied to the local database. Used by 
-    bin/update to warn the user about DB changes before proceeding 
+${0##*/}
+    Takes at least one git commit SHA hash and compares the
+    Config/sql/db_updates.sql file in older (non-Migrations) projects
+    to either the second commit SHA if provided, or the "HEAD" commit.
+    The output is the difference between the files. Practically, this
+    will be any SQL commands added to the bottom of the file,
+    indicating they need to be applied to the local database. Used by
+    bin/update to warn the user about DB changes before proceeding
     with a git pull. Should be run from the project root folder.
 
 Usage:

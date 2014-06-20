@@ -7,11 +7,11 @@ function usage()
 	$script = basename(__FILE__);
 	echo <<<EOT
 
-${script}  
-    Uses the Config/database.php file to execute a mysqldump of the 
-    default database into a ZIP file located in a backups/ folder 
-    created in the project root (if necessary). Outputs the ZIP 
-    file's size as a crude verification step. Should be run from 
+${script}
+    Uses the Config/database.php file to execute a mysqldump of the
+    default database into a ZIP file located in a backups/ folder
+    created in the project root (if necessary). Outputs the ZIP
+    file's size as a crude verification step. Should be run from
     the project root folder.
 
 Usage:

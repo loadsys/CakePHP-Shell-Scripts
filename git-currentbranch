@@ -8,8 +8,9 @@ usage ()
 ${0##*/}
     Echoes the name of the currently checked-out git branch. Exits
     with a non-zero code when run in a non-git directory. The output
-    of this script can be captured into a variable in another script using the following:
-    
+    of this script can be captured into a variable in another script
+    using the following:
+
     BRANCH=\$(bin/git-currentbranch)
 
 Usage:

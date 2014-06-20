@@ -5,17 +5,17 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    For the git repo in the current working directory, will fetch 
-    any updates from origin and exit 0 if there are no changes, 
-    and 1 if there are. Useful for determining whether to proceed 
+${0##*/}
+    For the git repo in the current working directory, will fetch
+    any updates from origin and exit 0 if there are no changes,
+    and 1 if there are. Useful for determining whether to proceed
     with a task or not.
 
 Usage:
     bin/${0##*/} [ref]
-    
-    Takes an optional ref name to use when comparing against the local copy 
-    of the remote repo. Defaults to 'master'.
+
+    Takes an optional ref name to use when comparing against the
+    local copy of the remote repo. Defaults to 'master'.
 
 
 EOT

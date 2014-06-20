@@ -5,12 +5,14 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Provides a simplified interface for sending email from the local system.
+${0##*/}
+    Provides a simplified interface for sending email from the local
+    system, with the goal of being able to fail gracefully when the
+    \`mail\` executable is not available.
 
 Usage:
     bin/${0##*/} <emailAddress> <subject> <msgBodyFile>
-    
+
     - emailAddress: The email address to which to send the message.
     - subject: The subject line to use for the message.
     - msgBodyFile: The full path to the text file containing the message body.
