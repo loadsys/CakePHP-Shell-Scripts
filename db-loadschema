@@ -26,8 +26,9 @@ fi
 
 # Variable initialization.
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+APP_DIR="$DIR"
 BIN_DIR="$DIR/bin"
-CONFIG_DIR="$DIR/Config"
+CONFIG_DIR="$APP_DIR/Config"
 MIGRATION_DIR="$CONFIG_DIR/Migration"
 CAKE_SHELL="$DIR/Console/cake"
 DEFAULT_SCHEMAPHP="$CONFIG_DIR/Schema/schema.php"

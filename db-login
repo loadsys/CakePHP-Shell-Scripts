@@ -24,10 +24,10 @@ fi
 
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-BINDIR="${DIR}/bin"
+BIN_DIR="$DIR/bin"
 
 # Holy yuck, but nothing else works!
-eval $( ${BINDIR}/db-credentials )
+eval $( ${BIN_DIR}/db-credentials )
 
 CMD="mysql --host=${DB_HOST} --database=${DB_NAME} --user=${DB_USER}"
 PATTERN=" |'"

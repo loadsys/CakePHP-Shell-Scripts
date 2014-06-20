@@ -28,9 +28,10 @@ if [ "$1" = '-h' ]; then
 fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-SQLFILE="$DIR/Config/sql/db_updates.sql"
-TMP_A="$DIR/tmp/db_updates.a.sql"
-TMP_B="$DIR/tmp/db_updates.b.sql"
+APP_DIR="."  # Must be relative to git root.
+SQLFILE="$APP_DIR/Config/sql/db_updates.sql"
+TMP_A="$APP_DIR/tmp/db_updates.a.sql"
+TMP_B="$APP_DIR/tmp/db_updates.b.sql"
 
 #@TODO: Add a -s (silent) flag for db-apply-updates.sh to use to suppress all "for humans" output.
 
