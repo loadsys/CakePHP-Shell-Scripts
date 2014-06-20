@@ -27,6 +27,6 @@ fi
 if [ -n "$1" ]; then
 	DIR=$1
 else
-	DIR="$( cd -P "$( dirname "$0" )"/.. && pwd )";
+	DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 fi
-find $DIR -name "empty" -exec sh -c 'mv "$0" "${0%empty}.gitkeep"' {} \;
+find $DIR -name "empty" -type f -exec sh -c 'mv "$0" "${0%empty}.gitkeep"' {} \;
