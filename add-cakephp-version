@@ -5,21 +5,22 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    This script will download and create a CakePHP "core" folder for 
-    the version number specified as the command line argument in 
-    whatever folder it lives in. You must relocate this script to its 
-    own directory where it can spawn new folders for each Cake version 
-    without interfering with a git repo. This should be somewhere 
-    central on your system where all Cake projects can symlink to the 
+${0##*/}
+    This script will download and create a CakePHP "core" folder for
+    the version number specified as the command line argument in
+    whatever folder it lives in. You must relocate this script to its
+    own directory where it can spawn new folders for each Cake version
+    without interfering with a git repo. This should be somewhere
+    central on your system where all Cake projects can symlink to the
     individual Cake version required.
 
 Usage:
-    bin/${0##*/} x.y.z [-f]
-    
-    Pass a CakePHP release number as the first argument.
-    
-    Specify '-f' as the second argument to forcibly replace the 
+    cakes/${0##*/} x.y[.z] [-f]
+
+    Pass a CakePHP release number (or major.minor for latest) as
+    the first argument.
+
+    Specify '-f' as the second argument to forcibly replace the
     cakephp repo.
 
 
@@ -30,7 +31,6 @@ EOT
 if [ "$1" = '-h' ]; then
 	usage
 fi
-
 
 umask a+rw
 
@@ -45,7 +45,7 @@ if [ "$2" = '-f' ]; then
 fi
 
 
-# Just a little precaution since this script comes bundled in the 
+# Just a little precaution since this script comes bundled in the
 # CakePHP-Skeleton's bin/ folder, but should't be used from there.
 if [ "${DIR##*/}" = 'bin' ]; then
 	echo "!!! The script has detected you are trying to run it from the bin/ folder."
@@ -57,15 +57,6 @@ if [ -n "$1" ]; then
 	TAG=$1
 else
 	usage
-fi
-DESTDIR="${DIR}/cake_${TAG}"
-
-# Automatically replace an existing copy of the version.
-if [ -d "${DESTDIR}" ]; then
-	echo "## Recreating Cake core v${TAG}" >&2
-	rm -rf ${DESTDIR}
-else
-	echo "## Creating Cake core v${TAG}" >&2
 fi
 
 # If configured, reuse the existing temp folder (if present).
@@ -87,11 +78,29 @@ echo "## Fetching updates from remote." >&2
 cd ${TMPDIR}
 git fetch
 
+# "Fill in" the full version number if we were only given a major and minor.
+NUM_DOTS=$( tr -dc '.' <<<"$TAG" | awk '{ print length; }' )
+if [ $NUM_DOTS -lt 2 ]; then
+	echo "## Determining latest point release." >&2
+	POINTRELEASE=$( git tag -l | grep "^${TAG}[0-9\.]*$" | sed "s/${TAG}\.//" | sort -n | tail -1 )
+	TAG="${TAG}.${POINTRELEASE}"
+fi
+
 echo "## Verifying requested tag: ${TAG}" >&2
-git show-ref --tags --quiet --verify -- "refs/tags/$1"
+git show-ref --tags --quiet --verify -- "refs/tags/${TAG}"
 if [ $? -ne 0 ]; then
-	echo "!! Tag does not exist in the repo. Please check your input and try again."
+	echo "!! Tag '$TAG' does not exist in the repo. Please check your input and try again."
 	exit 1
+fi
+
+DESTDIR="${DIR}/cake_${TAG}"
+
+# Automatically replace an existing copy of the version.
+if [ -d "${DESTDIR}" ]; then
+	echo "## Recreating Cake core v${TAG}" >&2
+	rm -rf ${DESTDIR}
+else
+	echo "## Creating Cake core v${TAG}" >&2
 fi
 
 echo "## Staging snapshot." >&2
