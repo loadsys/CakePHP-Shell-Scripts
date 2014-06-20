@@ -44,7 +44,7 @@ WEBROOT_PATH="$APP_DIR/webroot/"
 eval $( ${BIN_DIR}/db-credentials ) # Yuck, but nothing else works!
 DATE=$(date +%Y-%m-%d)
 OPTIONS="--skip-add-drop-table --no-create-info"
-TMP_PATH="$DIR/app/tmp/"
+TMP_PATH="$APP_DIR/tmp/"
 DESTINATION_NAME="${DB_NAME}_sample_data_${DATE}"
 
 # Generate the dump, compress it and move it into place.
