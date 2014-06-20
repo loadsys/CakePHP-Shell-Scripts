@@ -26,4 +26,18 @@ fi
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 CFG_FILE="$DIR/Config/phpdoc.xml"
 
-bin/phpdoc.php --configuration="${CFG_FILE}" "$@"
+# Bail out if phpcs isn't available to us
+PHPDOC="$( which phpdoc )"
+if [ $? -gt 0 ]; then
+	PHPDOC="$BIN_DIR/phpdoc"
+	test -x $PHPDOC
+fi
+if [ $? -gt 0 ]; then
+	echo "!! The 'phpdoc' command was not found on this system."
+	echo ""
+	exit 1
+fi
+echo "## Found phpdoc at: ${PHPDOC}"
+
+
+$PHPDOC --configuration="${CFG_FILE}" "$@"
