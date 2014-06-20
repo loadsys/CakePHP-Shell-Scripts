@@ -122,12 +122,6 @@ echo "## Current commit is $EXISTINGBRANCH ($EXISTINGCOMMIT)";
 
 # Update repository.
 echo "## Pulling changes from remote repo.";
-
-# @TODO: Investigate using a manual refspec to avoid two separate calls:
-# Ref: http://stackoverflow.com/questions/1204190/does-git-fetch-tags-include-git-fetch#answer-14946840
-# Example: git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
-#git fetch --tags
-
 git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 
 

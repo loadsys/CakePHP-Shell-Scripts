@@ -40,7 +40,7 @@ echo "## Running installs for all dependency management tools found.";
 "$BINDIR/git-submodules"
 
 # Install PEAR packages if config file is present.
-if [ -e "$PEAR_PACKAGES_FILE" ]; then
+if [ -r "$PEAR_PACKAGES_FILE" ]; then
 	PEAR="$( which pear )"
 	if [ $? -gt 0 ]; then
 		echo "!! Found pear config file '$PEAR_PACKAGES_FILE', but pear is not present on this system."

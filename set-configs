@@ -5,27 +5,18 @@ usage ()
 {
 	cat <<EOT
 
-${0##*/}  
-    Searches the Config/ folder for any files matching the pattern 
+${0##*/}
+    Searches the Config/ folder for any files matching the pattern
     *.ENV.* and copies them to the same file name minus ".ENV". Should
     be run from the project root folder.
-    
+
     For example, where ENV="prod":
        Config/core.prod.php -> Config/core.php
        Config/database.prod.php -> Config/database.php
 
-	Note that "dashed" config files are loaded in place, not renamed.
-	So core-dev.php should be loaded by core.php when the APP_ENV=dev,
-	but this script would have to be used to copy core.dev.php to
-	core.php. The two methods are not entirely compatible since
-	core.php is probably configured to load core-dev.php in the former
-	case but would be overwritten by core.dev.php in the latter.
-
-
 Usage:
-    bin/${0##*/} [ENV]
+    bin/${0##*/} <ENV>
 
-    \$1 = Environment name for which to load configs. Default: $APP_ENV.
 
 EOT
 
@@ -37,15 +28,20 @@ fi
 
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-CONFIG_DIR="$DIR/Config";
+APP_DIR="${DIR}"
+CONFIG_DIR="${APP_DIR}/Config";
 
-# Copy config files in place
+# Select the correct env, first from command line, then environment,
+# then default to production.
 if [ $1 ]; then
 	ARG_ENV=$1;
+elif [ -n "$APP_ENV" ]; then
+	ARG_ENV=$APP_ENV;
 else
-	ARG_ENV="$APP_ENV";
+	ARG_ENV="prod";
 fi
 
+# Copy config files in place.
 echo "## Copying config files into place for environment: $ARG_ENV";
 for CFG_FILE in $( ls -1 ${CONFIG_DIR} | grep -F ".${ARG_ENV}." ); do
 	cp -fv ${CONFIG_DIR}/${CFG_FILE} ${CONFIG_DIR}/${CFG_FILE/\.${ARG_ENV}/} | sed "s|${DIR}\/||g"

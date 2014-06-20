@@ -30,7 +30,8 @@ if (isset($argv[1]) && $argv[1] == '-h') {
 // Set up variables.
 $dir = getcwd();
 $backupDir = $dir . '/backups';
-$dbConfigFile = $dir . '/Config/database.php';
+$configDir = $dir . '/Config';
+$dbConfigFile = $configDir . '/database.php';
 $date = date('Ymd-His');
 if (!is_readable($dbConfigFile)) {
 	echo "!! Failed to read database config file: '{$dbConfigFile}'" . PHP_EOL;
