@@ -61,7 +61,10 @@ else
 	COVERAGE="--report-full --report-summary"
 fi
 
-$PHPCS -p --extensions=php --standard=CakePHP ${COVERAGE} ${SNIFF_FOLDERS[@]}
+# @TODO: Detect which to use. Ours should be a dependency of the shell-scripts so it's always available though.
+CODE_STANDARD=CakePHP
+CODE_STANDARD=Vendor/loadsys/loadsys_codesniffer/Loadsys
+$PHPCS -p --extensions=php --standard="$CODE_STANDARD" ${COVERAGE} ${SNIFF_FOLDERS[@]}
 
 if [ $SAVE_REPORTS ] && [ $? -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
