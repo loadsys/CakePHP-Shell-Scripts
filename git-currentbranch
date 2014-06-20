@@ -27,7 +27,5 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-#@TODO: Works, but throws a fatal error message if run in a non-git dir. We need to suppress that output.
-
-git rev-parse --quiet --abbrev-ref HEAD
+git rev-parse --quiet --abbrev-ref HEAD 2>/dev/null
 exit $?
