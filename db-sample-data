@@ -1,38 +1,67 @@
 #!/usr/bin/env bash
-# Script is designed to dump frequently updated data from production for
-# importing into a local development database. Currently has hardcoded
-# $TABLES and needs to be abstracted to work for "any" project more easily.
-# beporter@users.sourceforge.net, 2013-03-08
-#
-# Run from web root directory on production.
-#
-# Example:
-# bin/db-sample-data database dbuser password
 
-echo "WORK IN PROGRESS";
-exit 0;
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Dumps frequently updated data from production to a web-accessible
+    file for downloading and importing into a local development
+    database. Prompts with the download URL and waits for a response
+    from the user to delete the file. Pass the names of the DB tables
+    you wish to download as arguments. Without arguments, will dump
+    the entire \$default database.
+
+Usage:
+    bin/${0##*/} [table] [table2] [table3]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+if [ -z "$1" ]; then
+	TABLES=''
+else
+	TABLES="--tables "$*""
+fi
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+APP_DIR="$DIR"
+BIN_DIR="${DIR}/bin"
+
 
 # Configuration vars. Set these appropriately for your app and environment.
-TABLES="table1 table2 table3"
-WEBROOT_PATH="webroot/"
-PUBLIC_URL="http://mysite.com"
+PUBLIC_URL=""
+WEBROOT_PATH="$APP_DIR/webroot/"
+
 
 # Internal var setup.
-DB=$1
-USER=$2
-PASS=$3
+eval $( ${BIN_DIR}/db-credentials ) # Yuck, but nothing else works!
 DATE=$(date +%Y-%m-%d)
 OPTIONS="--skip-add-drop-table --no-create-info"
-TMP_PATH="tmp/"
-DESTINATION_FILE="${DB}_sample_data_$DATE.sql"
+TMP_PATH="$DIR/app/tmp/"
+DESTINATION_NAME="${DB_NAME}_sample_data_${DATE}"
 
+# Generate the dump, compress it and move it into place.
+cd "${TMP_PATH}"
+mysqldump --host="${DB_HOST}" --user="${DB_USER}" -p${DB_PASS} ${OPTIONS} ${DB_NAME} $TABLES > "${DESTINATION_NAME}.sql"
+zip -rq9 "${WEBROOT_PATH}${DESTINATION_NAME}.zip" "${DESTINATION_NAME}.sql"
+rm -f "${DESTINATION_NAME}.sql"
 
-mysqldump -u ${USER} -p${PASS} ${OPTIONS} ${DB} --tables ${TABLES} > "${TMP_PATH}${DESTINATION_FILE}"
-zip -rv9 "${WEBROOT_PATH}${DESTINATION}.zip" "${TMP_PATH}${DESTINATION_FILE}"
-rm -f "${TMP_PATH}${DESTINATION_FILE}"
-echo "Download URL: ${PUBLIC_URL}/${DESTINATION}.zip"
-read -p "Delete ${PUBLIC_URL}/${DESTINATION}.zip? [Y/n]: " ARG_DELETEFILE
+# Prompt to download the file, then delete it.
+echo "## Download URL: ${PUBLIC_URL}/${DESTINATION_NAME}.zip"
+read -p "?? Delete ${PUBLIC_URL}/${DESTINATION_NAME}.zip? [Y/n]: " ARG_DELETEFILE
 case $ARG_DELETEFILE in
-	[Yy]*|* ) rm -f "${WEBROOT_PATH}${DESTINATION}.zip"; echo "File deleted." break;;
-	[Nn]* ) echo "File REMAINS! Please clean it up when you are done to prevent data leaks." break;;
+	[Yy]*|*)
+		rm -f "${WEBROOT_PATH}${DESTINATION_NAME}.zip"
+		echo "## File deleted."
+		;;
+	[Nn]*)
+		echo "## File REMAINS! Please clean it up when you are done to prevent data leaks."
+		;;
 esac
