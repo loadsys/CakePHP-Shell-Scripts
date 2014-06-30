@@ -26,8 +26,8 @@ fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
-$DIR/Console/cake seed
+$DIR/Console/cake BasicSeed.basic_seed seed
 if [ "$1" = '--dev' ]; then
-  $DIR/Console/cake seed --dev
+  $DIR/Console/cake BasicSeed.basic_seed seed --dev
 fi
 
