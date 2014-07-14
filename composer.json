@@ -1,6 +1,6 @@
 {
     "name": "loadsys/cakephp-shell-scripts",
-    "description": "This collection of scripts is intended to provide consistency and shortcuts for common project tasks (currently they are tuned for CakePHP v2.x projects, pre-Composer).",
+    "description": "Reusable CakePHP project shell scripts.",
     "license": "MIT",
     "authors": [
         {
