@@ -31,7 +31,10 @@ if [ -n "$1" ]; then
 	ARG_OWNER=$1
 else
 	# This works around the scripts being run elevated via `sudo`.
-	# Can't use `stat -c|-f '%U %G' ./` because options are not standard across systems.
+	# Can't use `stat -c'%U %G'|-f '%sU %sG' ./` because options are not standard across systems.
+
+	#@TODO: This method doesn't work when $DIR is a symlink with a name that doesn't match the target. Case study: eu.loadsysdev.com, the ~/public_html/ folder is really a symlink to /var/www/sites/eu.loadsysdev.com/html, and the owner of the symlink is root:root.
+
 	ARG_OWNER="$( \ls -l "${DIR}/.." | grep -v '^l' | grep " $(basename $( pwd ))\$" | awk '{ print $3 }' )"
 fi
 
