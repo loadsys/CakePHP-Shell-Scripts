@@ -8,6 +8,7 @@ This collection of scripts is intended to provide consistency and shortcuts for 
 * The 2.x branch is meant for projects that use composer (although submodules are still supported).
 * Most scripts listed below can take a `-h` option as their first argument to output usage information.
 * Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
+* Most are designed to fail gracefully. For example, if `pear` is available and your project defines a pear config file, then those dependencies will be installed by `deps-install`, otherwise pear will be silently ignored. This provides maximum flexibility without having to customize the scripts per-project.
 
 
 ## Requirements ##
@@ -29,8 +30,8 @@ Additionally, some scripts expect additional tools that should be automatically 
 
 * `bin/phpcs`
 * `bin/phpunit`
-* `bin/phpdoc.php`
-* `bin/cake` (composer installed **by target project**)
+* `bin/phpdoc`
+* `bin/cake` (composer-installed **by target project**)
 
 If these items are not available, some scripts may not function as expected.
 
@@ -46,7 +47,7 @@ Your project's own `composer.json` file should look something like this:
 ```json
 {
     "require": {
-		"loadsys/cakephp-shell-scripts": "*"
+		"loadsys/cakephp-shell-scripts": "2.0.*"
     },
     "config": {
 		"bin-dir": "bin"
