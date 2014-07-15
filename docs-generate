@@ -40,5 +40,4 @@ if [ $? -gt 0 ]; then
 fi
 echo "## Found phpdoc at: ${PHPDOC}"
 
-
-$PHPDOC --configuration="${CFG_FILE}" "$@"
+bin/run-in-vagrant ""${PHPDOC}" --config="${CFG_FILE}" "$@""
