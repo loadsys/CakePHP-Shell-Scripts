@@ -38,6 +38,7 @@
         "env-vars-echo",
         "env-vars-load",
         "find-symlinks-to-in",
+        "folder-delete-items-older-than-days",
         "git-currentbranch",
         "git-localchanges",
         "git-remotechanges",

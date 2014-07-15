@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage () {
+	cat <<EOT
+
+${0##*/}
+    Deletes files (only) within the given folder that have a
+    modified time older than the optional second argument.
+
+Usage:
+    bin/${0##*/} <path> [days]
+
+	\$1 = The root filesystem path to search. Will be
+	      provided to \`find\`.
+	\$2 = Optional last modified age in days for files that should
+	      be kept. Files older than (today - \$2 eu	days) will be
+	      deleted. Default = 30 days.
+
+Environment Variables:
+	(none)
+
+EOT
+
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+# Process command line args.
+if [ -n "$1" ]; then
+	SEARCH_PATH=$1
+else
+	echo "!! No path provided. Aborting."
+	usage 1
+fi
+if [ -n "$2" ]; then
+	AGE_DAYS=$2
+else
+	AGE_DAYS=30
+fi
+
+
+find "${SEARCH_PATH}" -type f -mtime +${AGE_DAYS} -print0 | xargs -0 rm -f
