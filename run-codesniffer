@@ -61,18 +61,13 @@ else
 	COVERAGE="--report-full --report-summary"
 fi
 
-# @TODO: Detect which to use. Ours should be a dependency of the shell-scripts so it's always available though.
-CODE_STANDARD=CakePHP
+# Should always be available, since it is a sub-dependency of the
+# loadsys/cakephp-shell-scripts composer package itself.
 CODE_STANDARD=Vendor/loadsys/loadsys_codesniffer/Loadsys
+
 $PHPCS -p --extensions=php --standard="$CODE_STANDARD" ${COVERAGE} ${SNIFF_FOLDERS[@]}
 
 if [ $SAVE_REPORTS ] && [ $? -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
-
-
-#@TODO: Make use of new Loadsys code standard.
-# Ref: https://github.com/loadsys/loadsys_codesniffer
-# Example usage:
-# bin/phpcs --standard=Vendor/loadsys/loadsys_codesniffer/Loadsys --report-summary -p --extensions=php Controller/ Model/ View/ Lib/
