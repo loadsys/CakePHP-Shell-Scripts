@@ -14,8 +14,8 @@ ${0##*/}
 Usage:
     bin/${0##*/} <partial> [search dir]
 
-	$1 = The partial file name/path for which to search. You can use grep syntax.
-	$2 = The directory in which to search. If not provided, defaults to the current directory (./).
+	\$1 = The partial file name/path for which to search. You can use grep syntax.
+	\$2 = The directory in which to search. If not provided, defaults to the current directory (./).
 
 Environment Variables:
 	(none)
