@@ -12,7 +12,7 @@
  * @param string $scriptName Typically set to basename($argv[0]) when the method is called.
  * @return void
  */
-function usage ($scriptName) {
+function usage ($scriptName, $exitCode = 0) {
 	$usage = <<<EOD
 
 {$scriptName} 
@@ -34,7 +34,7 @@ Usage:
 EOD;
 
 	echo $usage;
-	exit(0);
+	exit($exitCode);
 }
 
 /**
