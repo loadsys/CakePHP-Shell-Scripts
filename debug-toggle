@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}  
+    Edits and saves the core-APP_ENV.php config file to toggle debug between 0 and 2 (based on the existing value). Takes an optional value to write to the file directly.
+
+Usage:
+    bin/${0##*/} [NEW-DEBUG-VALUE]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Variable initalization.
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+
+
+echo "@TODO"
+exit 1
