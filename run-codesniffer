@@ -6,12 +6,12 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Convenience wrapper around code sniffing tool. If $1 is provided, a
+    Convenience wrapper around code sniffing tool. If \$1 is provided, a
     summary and full reports will be generated, rather than being output
     to the standard output.
 
 Usage:
-    bin/${0##*/} [save reports]
+    bin/${0##*/} [save reports?]
 
     Specify 'y' as the first argument to save reports in the tmp directory,
     else full and summary reports are generated but not saved to a file.
@@ -30,16 +30,15 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-REPORT_DIR="${TMP_DIR}/reports"
+REPORT_DIR="${TMP_DIR}/code-sniffs"
+FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
+SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
-FULL_REPORT_FILE="${REPORT_DIR}/full-codesniff.txt"
-SUMMARY_REPORT_FILE="${REPORT_DIR}/summary-codesniff.txt"
-SNIFF_FOLDERS=("${DIR}/Controller" "${DIR}/Model" "${DIR}/View" "${DIR}/Lib")
+CODE_STANDARD="Vendor/loadsys/loadsys_codesniffer/Loadsys"
+SNIFF_FOLDERS=("${DIR}/Controller" "${DIR}/Model" "${DIR}/View" "${DIR}/Lib" "${DIR}/Console/Command")
+SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. This script will therefore always exit 0.
 
-test -n "$1"
-SAVE_REPORTS=$?
-
-# Bail out if phpcs isn't available to us
+# Bail out if phpcs isn't available to us.
 PHPCS="$( which phpcs )"
 if [ $? -gt 0 ]; then
 	PHPCS="$BIN_DIR/phpcs"
@@ -52,22 +51,28 @@ if [ $? -gt 0 ]; then
 fi
 echo "## Found phpcs at: ${PHPCS}"
 
-if [ $SAVE_REPORTS ]; then
-	# Generate Full and Summary Reports and save to a file.
+if [ -z "$1" ]; then
+	echo "## Printing reports..."
+	SAVE_REPORTS=1  # 1 = false. DON'T save reports when no args provided.
+	COVERAGE="--report-full --report-summary"
+else
+	echo "## Saving reports..."
+	SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
 	COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
 	mkdir -p "$REPORT_DIR"
-else
-	# Generate Full and Summary Reports but print to screen.
-	COVERAGE="--report-full --report-summary"
 fi
 
-# Should always be available, since it is a sub-dependency of the
-# loadsys/cakephp-shell-scripts composer package itself.
-CODE_STANDARD=Vendor/loadsys/loadsys_codesniffer/Loadsys
+"$PHPCS" -p --extensions=php --standard="$CODE_STANDARD" ${COVERAGE} ${SNIFF_FOLDERS[@]}
+SNIFF_RESULT=$?
 
-$PHPCS -p --extensions=php --standard="$CODE_STANDARD" ${COVERAGE} ${SNIFF_FOLDERS[@]}
-
-if [ $SAVE_REPORTS ] && [ $? -eq 0 ]; then
+if [ $SAVE_REPORTS -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
+fi
+
+# Exit based on whether sniff fails should count as a "failure".
+if [ $SNIFF_FAIL_CAUSES_SCRIPT_FAIL -eq 0 ]; then
+	exit $SNIFF_RESULT
+else
+	exit 0
 fi
