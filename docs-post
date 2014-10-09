@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# POST a zip of generated docs or coverage reports to loadsysdev.
+
+#@TODO: Enforce first and second args.
+PROJECT_NAME=${1:-eu-mk2}
+TOKEN=${2:-foobar}
+DEST_URL=http://localhost/docs-manager.php
+
+#@TODO: Add shortcut args for "docs" and "coverage" that set paths appropriately.
+#@TODO: Run the appropriate command to generate docs if output path is not already populated.
+
+SRC_DIR=tmp/coverage/html
+TMP_FILE=tmp/upload.zip
+PROJECT_NAME=${PROJECT_NAME}-coverage
+
+zip -rq9 "$TMP_FILE" "$SRC_DIR"
+curl \
+ -FauthToken=$TOKEN \
+ -FprojectName=$PROJECT_NAME \
+ -Ffile=@"$TMP_FILE;type=application/zip" \
+ $DEST_URL
+rm $TMP_FILE
