@@ -10,13 +10,14 @@ DEST_URL=http://localhost/docs-manager.php
 #@TODO: Run the appropriate command to generate docs if output path is not already populated.
 
 SRC_DIR=tmp/coverage/html
-TMP_FILE=tmp/upload.zip
 PROJECT_NAME=${PROJECT_NAME}-coverage
 
-zip -rq9 "$TMP_FILE" "$SRC_DIR"
-curl \
- -FauthToken=$TOKEN \
- -FprojectName=$PROJECT_NAME \
- -Ffile=@"$TMP_FILE;type=application/zip" \
+# This ensures no intermediate directories are stored in the ZIP file.
+cd "$SRC_DIR"
+
+# Send the POST request, using ZIP data fed from stdin
+zip -rq8 - * | curl \
+ -F "authToken=$TOKEN" \
+ -F "projectName=$PROJECT_NAME" \
+ -F "file=@-;filename=upload.zip;type=application/zip" \
  $DEST_URL
-rm -f $TMP_FILE
