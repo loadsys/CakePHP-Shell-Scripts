@@ -19,4 +19,4 @@ curl \
  -FprojectName=$PROJECT_NAME \
  -Ffile=@"$TMP_FILE;type=application/zip" \
  $DEST_URL
-rm $TMP_FILE
+rm -f $TMP_FILE
