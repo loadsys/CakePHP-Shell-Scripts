@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Provides a wrapper around \`composer install\` that takes into
+    account the current APP_ENV environment setting, as well as the
+    presence or absence of a composer.json file and a composer
+    executable itself. Can be safely called even if these items are
+    missing (with the result being essentially a no-op and >0 exit
+    code.)
+    
+    There is a certain amount of irony in this script being
+    included in a composer package, since you would have had to
+    already run 'composer install' in order to have access to this
+    convenience script. If nothing else, this script exists here
+    as a copy/paste reference of how to achieve a certain amount
+    of gracefulness in running a tool that may or may not be
+    present.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+BIN_DIR="${DIR}/bin"
+COMPOSER_CONFIG_FILE="$DIR/composer.json"
+GUESSES=( "$( which composer )" "$BIN_DIR/composer" "$( which composer.phar )" "$BIN_DIR/composer.phar" )
+
+# Bail out if there's no config file present.
+if [ ! -e "$COMPOSER_CONFIG_FILE" ]; then
+	echo "!! No composer config file at '$COMPOSER_CONFIG_FILE'."
+	exit 2
+fi
+echo "## Found composer config at: ${COMPOSER_CONFIG_FILE}"
+
+# Bail out if composer isn't available to us.
+for GUESS in "$GUESSES"; do
+	if [ -x "$GUESS" ]; then
+		COMPOSER="$GUESS"
+		break
+	fi
+done
+if [ -z "$COMPOSER" ]; then
+	echo "!! The 'composer' command was not found on this system."
+	echo ""
+	exit 1
+fi
+echo "## Found composer at: ${COMPOSER}"
+
+
+# Set options based on APP_ENV.
+case "$APP_ENV" in
+	prod|production) COMPOSER_OPTIONS="--no-dev" ;;
+	stage|staging) COMPOSER_OPTIONS="--no-dev" ;;
+	dev|development) COMPOSER_OPTIONS="--dev" ;;
+	*) COMPOSER_OPTIONS="--dev"
+esac
+
+# Execute `composer install`
+"$COMPOSER" install $COMPOSER_OPTIONS --no-interaction
+"$COMPOSER" dumpautoload --optimize
