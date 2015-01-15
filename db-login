@@ -29,13 +29,13 @@ BIN_DIR="$DIR/bin"
 # Holy yuck, but nothing else works!
 eval $( ${BIN_DIR}/db-credentials )
 
-CMD="mysql --host=${DB_HOST} --database=${DB_NAME} --user=${DB_USER}"
+CMD="mysql --host=${DB_HOST} --database=${DB_DATABASE} --user=${DB_LOGIN}"
 PATTERN=" |'"
 
-if [[ ${DB_PASS} =~ ${PATTERN} ]]; then
-	${CMD} -p"${DB_PASS}"
-elif [ -n "${DB_PASS}" ]; then
-	${CMD} -p${DB_PASS}
+if [[ ${DB_PASSWORD} =~ ${PATTERN} ]]; then
+	${CMD} -p"${DB_PASSWORD}"
+elif [ -n "${DB_PASSWORD}" ]; then
+	${CMD} -p${DB_PASSWORD}
 else
 	${CMD}
 fi
