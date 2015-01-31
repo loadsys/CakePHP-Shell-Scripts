@@ -70,5 +70,4 @@ case "$APP_ENV" in
 esac
 
 # Execute `composer install`
-"$COMPOSER" install $COMPOSER_OPTIONS --no-interaction
-"$COMPOSER" dumpautoload --optimize
+"$COMPOSER" install $COMPOSER_OPTIONS --no-interaction --ignore-platform-reqs --optimize-autoloader

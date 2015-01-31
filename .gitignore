@@ -1,8 +1,8 @@
 # Potential folders that might show up here as accidental script output.
-composer.lock
-backups
-tmp
-bin
+/composer.lock
+/backups
+/tmp
+/bin
 /vendor/
 
 # OS generated files
