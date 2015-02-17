@@ -34,6 +34,7 @@
         "email",
         "folder-delete-items-older-than-days",
         "git-currentbranch",
+        "git-hook-workingcopychange",
         "git-localchanges",
         "git-remotechanges",
         "git-submodules",
