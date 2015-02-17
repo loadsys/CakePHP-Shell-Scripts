@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+#
+# Ref:https://gist.github.com/jubianchi
+# Symlink this file at: `.git/hooks/post-checkout` and make it executable.
+# You can install it system wide too, see http://stackoverflow.com/a/2293578/685587
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    A git hook script intended to be used when your working copy
+    changes (checkout or merge). Checks for a composer.lock file.
+    If present, checks if the checkout includes changes to the
+    lock file. If changes are detected, executes
+    \`composer install\` to update dependencies to match the new
+    working copy.
+
+    Symlink this file as \`.git/hooks/post-checkout\` in your
+    project to have it auto-execute at the appropriate times. By
+    default, the script will only prompt you when the associated
+    commands should be executed.
+
+Usage:
+    bin/${0##*/}
+
+Environment Variables:
+    GIT_HOOK_POSTCHECKOUT_FORCE_EXECUTE
+        When set to a non-empty string, will cause the script to
+        auto-execute the associated commands instead of just
+        prompting about them.
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Bail out early if we're in the middle of a merge or rebase.
+GIT_DIR=$(git rev-parse --git-dir)
+GIT_DIR_MERGE="$GIT_DIR"/rebase-merge
+GIT_DIR_APPLY="$GIT_DIR"/rebase-apply
+if [[ (-d "$GIT_DIR_MERGE" && -f "$GIT_DIR_MERGE/interactive") || -d "$GIT_DIR_APPLY" ]]; then
+	exit 0
+fi
+
+
+# Add pairs of files to check for differences, and the commands to run
+# if diffs are found. MUST be in the same order! (first file must
+# pair with the first command!)
+FILE_LIST=("composer.lock")
+CMD_LIST=("composer install --dev --no-interaction --ignore-platform-reqs")
+
+
+# Loop over the configured files.
+for ((i=0; i < ${#FILE_LIST[@]}; ++i)); do
+	CHECK_FILE="${FILE_LIST[i]}"
+	CHECK_CMD="${CMD_LIST[i]}"
+	DIFF=$(git diff --stat HEAD@{1}..HEAD@{0} -- "$CHECK_FILE")
+	if [[ -f "$CHECK_FILE" && -n "$DIFF" ]]; then
+		if [ "${GIT_HOOK_POSTCHECKOUT_FORCE_EXECUTE:-""}" ]; then
+			echo "\`$CHECK_FILE\` has changed. Executing hook command."
+			$CHECK_CMD
+		else
+			echo "\`$CHECK_FILE\` has changed. You should execute the following command:"
+			echo ""
+			echo "    $CHECK_CMD"
+			echo ""
+		fi
+	fi
+done
