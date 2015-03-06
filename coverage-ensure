@@ -8,7 +8,7 @@ function usage()
 	$script = basename(__FILE__);
 	echo <<<EOT
 
-${script} <clover.xml> <coverage_percent>
+${script} [coverage_percent] [clover.xml]
     Uses the provided Clover XML code coverage report value to calculate
     the percentage of code covered by phpunit unit tests. Compares that
     percentage to  the provided integer value, and if coverage is lower
@@ -20,10 +20,15 @@ ${script} <clover.xml> <coverage_percent>
 Usage:
     bin/${script}
 
-    clover.xml       - Provide a filesystem path to an XML file produced
-                       by PHPunit's code coverage.
-    coverage_percent - An integer value between 0 and 100 represented the
-                       minimum required percentage of coverage required.
+    coverage_percent - Optional integer value between 0 and 100 represented
+                       the minimum required percentage of coverage required.
+                       If not provided, defaults to 100.
+
+          clover.xml - Optional filesystem path to an XML file produced
+                       by PHPunit's code coverage. If absent, the script
+                       will attempt to obtain the correct path using the
+                       project's Config/phpunit.xml file and will exit
+                       with an error if this fails.
 
 EOT;
 
@@ -33,35 +38,44 @@ if (isset($argv[1]) && $argv[1] == '-h') {
 	usage();
 }
 
-if (!isset($argv[1])) {
-	throw new InvalidArgumentException(
-		'First argument missing (clover.xml file path).'
-	);
-}
-
-if (!isset($argv[2])) {
-	throw new InvalidArgumentException(
-		'Second argument missing (integer minimum coverage percent).'
-	);
-}
-
 // Set up variables.
-$inputFile = $argv[1];
-$percentage = min(100, max(0, (int) $argv[2]));
+$percentage = (isset($argv[1]) ? (int)$argv[1] : 100);
+$percentage = max(0, min(100, $percentage));
 
-if (!is_readable($inputFile)) {
-	throw new InvalidArgumentException(
-		"Invalid input file provided: {$inputFile}"
-	);
+// Try to auto-detect the clover file path.
+if (isset($argv[2])) {
+	$inputFile = $argv[2];
+} else {
+	$baseDir = getcwd();
+	$phpunitConfigFile = "{$baseDir}/Config/phpunit.xml";
+	if (!is_readable($phpunitConfigFile)) {
+		echo "!! Could not guess path to clover.xml file. Aborting." . PHP_EOL;
+		exit(2);
+	}
+
+	$xml = new SimpleXMLElement(file_get_contents($phpunitConfigFile));
+	$snippet = $xml->xpath('//log[@type="coverage-clover"]');
+	if (!count($snippet)) {
+		echo "!! Config/phpunit.xml file does not specify a coverage-clover log. Aborting." . PHP_EOL;
+		exit(3);
+	}
+
+	$snippet = array_pop($snippet);
+	if (!isset($snippet['target'])) {
+		echo '!! Config/phpunit.xml: <log type="coverage-clover"> does not specify a `target` attribute. Aborting.' . PHP_EOL;
+		exit(4);
+	}
+
+	$snippet = (string)$snippet['target'];
+	$inputFile = "{$baseDir}/Config/{$snippet}";
 }
 
-if (!$percentage) {
-	throw new InvalidArgumentException(
-		"An integer checked percentage must be given as second parameter. Value provided: {$percentage}"
-	);
+// Parse the clover report file.
+if (!is_readable(realpath($inputFile))) {
+	echo "!! Invalid input file provided: `{$inputFile}`. Aborting." . PHP_EOL;
+	exit(5);
 }
-
-$xml = new SimpleXMLElement(file_get_contents($inputFile));
+$xml = new SimpleXMLElement(file_get_contents(realpath($inputFile)));
 $metrics = $xml->xpath('//metrics');
 $totalElements = 0;
 $checkedElements = 0;
@@ -73,11 +87,12 @@ foreach ($metrics as $metric) {
 
 $coverage = ($checkedElements / $totalElements) * 100;
 
-echo 'Code coverage is ' . number_format($coverage, 1) . '%';
+// Spit out the results.
+echo 'Code coverage is ' . number_format($coverage, 1) . '% - ';
 
 if ($coverage < $percentage) {
-    echo " - Minimum accepted is {$percentage}%" . PHP_EOL;
+    echo "Minimum accepted is {$percentage}%" . PHP_EOL;
     exit(1);
 }
 
-echo ' - OK!' . PHP_EOL;
+echo 'OK!' . PHP_EOL;
