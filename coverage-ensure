@@ -27,7 +27,7 @@ Usage:
           clover.xml - Optional filesystem path to an XML file produced
                        by PHPunit's code coverage. If absent, the script
                        will attempt to obtain the correct path using the
-                       project's Config/phpunit.xml file and will exit
+                       project's phpunit.xml[.dist] file and will exit
                        with an error if this fails.
 
 EOT;
@@ -47,27 +47,30 @@ if (isset($argv[2])) {
 	$inputFile = $argv[2];
 } else {
 	$baseDir = getcwd();
-	$phpunitConfigFile = "{$baseDir}/Config/phpunit.xml";
+	$phpunitConfigFile = "{$baseDir}phpunit.xml";
 	if (!is_readable($phpunitConfigFile)) {
-		echo "!! Could not guess path to clover.xml file. Aborting." . PHP_EOL;
-		exit(2);
+		$phpunitConfigFile = "{$baseDir}phpunit.xml.dist";
+		if (!is_readable($phpunitConfigFile)) {
+			echo "!! Could not guess path to clover.xml file. Aborting." . PHP_EOL;
+			exit(2);
+		}
 	}
 
 	$xml = new SimpleXMLElement(file_get_contents($phpunitConfigFile));
 	$snippet = $xml->xpath('//log[@type="coverage-clover"]');
 	if (!count($snippet)) {
-		echo "!! Config/phpunit.xml file does not specify a coverage-clover log. Aborting." . PHP_EOL;
+		echo "!! phpunit.xml file does not specify a coverage-clover log. Aborting." . PHP_EOL;
 		exit(3);
 	}
 
 	$snippet = array_pop($snippet);
 	if (!isset($snippet['target'])) {
-		echo '!! Config/phpunit.xml: <log type="coverage-clover"> does not specify a `target` attribute. Aborting.' . PHP_EOL;
+		echo '!! phpunit.xml: <log type="coverage-clover"> does not specify a `target` attribute. Aborting.' . PHP_EOL;
 		exit(4);
 	}
 
 	$snippet = (string)$snippet['target'];
-	$inputFile = "{$baseDir}/Config/{$snippet}";
+	$inputFile = "{$baseDir}/{$snippet}";
 }
 
 // Parse the clover report file.
