@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Make sure only root can run our script
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run using sudo" 1>&2
+   exit 1
+fi
+
+comment="Allow Vagrant with NFS without requiring a password"
+if grep -q "$comment" "/etc/sudoers"; then
+    echo 'Vagrant permissions already present in /etc/sudoers';
+else
+    echo 'Adding Vagrant permissions into /etc/sudoers';
+    cat <<EOF >> /etc/sudoers
+
+# $comment
+Cmnd_Alias VAGRANT_EXPORTS_ADD = /usr/bin/tee -a /etc/exports
+Cmnd_Alias VAGRANT_NFSD = /sbin/nfsd restart
+Cmnd_Alias VAGRANT_EXPORTS_REMOVE = /usr/bin/sed -E -e /*/ d -ibak /etc/exports
+%admin ALL=(root) NOPASSWD: VAGRANT_EXPORTS_ADD, VAGRANT_NFSD, VAGRANT_EXPORTS_REMOVE
+EOF
+fi

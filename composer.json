@@ -40,6 +40,7 @@
         "git-submodules",
         "init-repo",
         "migrations",
+        "nfsexports-setsudoaccess",
         "pear-install-deps",
         "pear-package-installed",
         "pear-package-installed-dumb",
