@@ -21,6 +21,7 @@
         "clear-cache",
         "clear-logs",
         "composer-install",
+        "coverage-ensure",
         "db-backup",
         "db-credentials",
         "db-loadschema",
