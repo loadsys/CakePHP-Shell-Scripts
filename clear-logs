@@ -26,4 +26,4 @@ fi
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
 echo "## Clearing logs.";
-rm -f $DIR/tmp/logs/*
+rm -f $DIR/logs/*
