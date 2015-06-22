@@ -47,9 +47,9 @@ if (isset($argv[2])) {
 	$inputFile = $argv[2];
 } else {
 	$baseDir = getcwd();
-	$phpunitConfigFile = "{$baseDir}phpunit.xml";
+	$phpunitConfigFile = "{$baseDir}/phpunit.xml";
 	if (!is_readable($phpunitConfigFile)) {
-		$phpunitConfigFile = "{$baseDir}phpunit.xml.dist";
+		$phpunitConfigFile = "{$baseDir}/phpunit.xml.dist";
 		if (!is_readable($phpunitConfigFile)) {
 			echo "!! Could not guess path to clover.xml file. Aborting." . PHP_EOL;
 			exit(2);
