@@ -10,9 +10,9 @@
     ],
     "require": {
         "phpunit/phpunit": "~4.1",
-        "phpdocumentor/phpdocumentor": "2.*",
-        "squizlabs/php_codesniffer": "2.*",
-        "loadsys/loadsys_codesniffer": "dev-php_codesniffer-2.x"
+        "phpdocumentor/phpdocumentor": "~2.0",
+        "squizlabs/php_codesniffer": "~2.0",
+        "loadsys/loadsys_codesniffer": "~3.0"
     },
     "config": {
         "bin-dir": "bin"
