@@ -6,9 +6,12 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Clears files from known Cake tmp directories. In particular,
-    should be run after database schema changes. Should be run
-    from the project root folder.
+    Clears Cake caches by engaging the Cake ConsoleShell and
+    instructing each configured Cache object to clear itself. This
+    makes it portable across caching providers, and works just as
+    well with Memcached and Redis as it does with File caching.
+
+    Should be run from the project root folder.
 
 Usage:
     bin/${0##*/}
@@ -26,10 +29,15 @@ fi
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
 echo "## Clearing cache folders.";
-rm -f $DIR/tmp/cache/cake_*
-rm -f $DIR/tmp/cache/models/*
-rm -f $DIR/tmp/cache/persistent/*
-rm -f $DIR/tmp/cache/views/*
 
-# @TODO: Investigate "rm: "." and ".." may not be removed" warnings.
-# Maybe change to this `rm -f ..?* .[!.]* *`? Ref: http://unix.stackexchange.com/a/77313/32976
+cat <<-'EOPHP' | bin/cake console
+	use Cake\Cache\Cache;
+	foreach (Cache::configured() as $key) {
+		Cache::clear(false, $key);
+		echo "Cleared: $key\n";
+	}
+	return "Done";
+
+EOPHP
+
+
