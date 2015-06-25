@@ -46,12 +46,12 @@ Your project's own `composer.json` file should look something like this:
 
 ```json
 {
-    "require": {
+	"require": {
 		"loadsys/cakephp-shell-scripts": "2.0.*"
-    },
-    "config": {
+	},
+	"config": {
 		"bin-dir": "bin"
-    }
+	}
 }
 ```
 Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
