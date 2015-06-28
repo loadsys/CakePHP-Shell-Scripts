@@ -18,8 +18,7 @@
         "bin-dir": "bin"
     },
     "bin": [
-        "clear-cache",
-        "clear-logs",
+        "cache-clear",
         "composer-install",
         "coverage-ensure",
         "db-backup",
@@ -40,6 +39,7 @@
         "git-remotechanges",
         "git-submodules",
         "init-repo",
+        "logs-clear",
         "migrations",
         "nfsexports-setsudoaccess",
         "pear-install-deps",
