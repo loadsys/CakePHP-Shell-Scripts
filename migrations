@@ -46,6 +46,6 @@ else
 	PLUGIN="-p $PLUGIN"
 fi
 
-$DIR/bin/clear-cache
-$DIR/Console/cake Migrations.migration $OPTION $PLUGIN
-$DIR/bin/clear-cache
+$DIR/bin/cache-clear
+$DIR/bin/cake Migrations.migration $OPTION $PLUGIN
+$DIR/bin/cache-clear

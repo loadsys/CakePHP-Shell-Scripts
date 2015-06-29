@@ -27,7 +27,7 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-PHPUNIT_CONFIG="Config/phpunit.xml"
+PHPUNIT_CONFIG="phpunit.xml"
 
 # if [ -n "$1" ]; then
 # 	TESTCASE=$1
@@ -36,5 +36,5 @@ PHPUNIT_CONFIG="Config/phpunit.xml"
 # 	TESTCASE="All"
 # fi
 
-bin/clear-cache
-bin/run-in-vagrant "${BIN_DIR}/phpunit --configuration="${PHPUNIT_CONFIG}" "$@""
+bin/cache-clear
+bin/vagrant-exec "${BIN_DIR}/phpunit --configuration="${PHPUNIT_CONFIG}" "$@""
