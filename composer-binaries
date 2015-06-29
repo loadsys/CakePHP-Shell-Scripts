@@ -18,6 +18,8 @@ function usage($script = null, $exitCode = 0) {
 	$usage = <<<EOD
 
 {$script} 
+	A meta script for working with the CakePHP-Shell-Scripts repo itself.
+
 	Searches the directory this script lives in for other executable files.
 	Generates a list of all _other_ executable files (exculding itself) in
 	the same directory of this script and replaces the "bin" configuration
@@ -29,7 +31,7 @@ function usage($script = null, $exitCode = 0) {
 	projects that require this package.
 
 Usage:
-    bin/{$script} 
+    ./{$script} 
 
 
 EOD;
