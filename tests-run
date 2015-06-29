@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Convenience wrapper around PHPUnit's Test Command along with passing
+    the correct configuration file path.
+
+Usage:
+    bin/${0##*/} [generate coverage]
+
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+umask a+rw
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+BIN_DIR="${DIR}/bin"
+TMP_DIR="${DIR}/tmp"
+PHPUNIT_CONFIG="phpunit.xml"
+
+# if [ -n "$1" ]; then
+# 	TESTCASE=$1
+# 	shift  # Knock off the first argument to this script so the rest will be passed to the TestShell.
+# else
+# 	TESTCASE="All"
+# fi
+
+bin/cache-clear
+bin/vagrant-exec "${BIN_DIR}/phpunit --configuration="${PHPUNIT_CONFIG}" "$@""

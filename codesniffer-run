@@ -30,12 +30,13 @@ umask a+rw
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
+SRC_DIR="${DIR}/src"
 REPORT_DIR="${TMP_DIR}/code-sniffs"
 FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
-CODE_STANDARD="Vendor/loadsys/loadsys_codesniffer/Loadsys"
-SNIFF_FOLDERS=("${DIR}/Controller" "${DIR}/Model" "${DIR}/View" "${DIR}/Lib" "${DIR}/Console/Command")
+CODE_STANDARD="vendor/loadsys/loadsys_codesniffer/Loadsys"
+SNIFF_FOLDERS=("${SRC_DIR}/Controller" "${SRC_DIR}/Model" "${SRC_DIR}/View" "${SRC_DIR}/Lib" "${SRC_DIR}/Console/Shell")
 SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. This script will therefore always exit 0.
 
 # Bail out if phpcs isn't available to us.

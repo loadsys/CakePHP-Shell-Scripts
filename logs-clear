@@ -7,8 +7,11 @@ usage ()
 
 ${0##*/}
     Clears files from Cake's logs directory. Really only needed to
-    recover disk space from aggressive logs. Should be run
-    from the project root folder.
+    recover disk space from aggressive logs. (A better option is to
+    configure \`logrotate\` to cycle, compress and purge the files
+    over time.)
+    
+    Should be run from the project root folder.
 
 Usage:
     bin/${0##*/}
@@ -26,4 +29,4 @@ fi
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
 echo "## Clearing logs.";
-rm -f $DIR/tmp/logs/*
+rm -f $DIR/logs/*
