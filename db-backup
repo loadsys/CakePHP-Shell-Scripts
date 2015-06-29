@@ -1,49 +1,89 @@
 #!/usr/bin/env php
 <?php
+namespace Loadsys\CakePHPShellScripts\DbBackup;
 
-//----------
-function usage()
-{
-	$script = basename(__FILE__);
-	echo <<<EOT
+/**
+ * Prints usage information and exits.
+ *
+ * @param string $script Typically set to basename($argv[0]) when the method is called.
+ * @param int $exitCode The numeric exit code to return. 0 = success. >0 = failure.
+ * @return void
+ */
+function usage($script = null, $exitCode = 0) {
+	$script = $script ?: basename(__FILE__);
+	$usage = <<<EOD
 
 ${script}
-    Uses the Config/database.php file to execute a mysqldump of the
-    default database into a ZIP file located in a backups/ folder
-    created in the project root (if necessary). Outputs the ZIP
-    file's size as a crude verification step. Should be run from
-    the project root folder. Will exit with an error code of 1 if
-    database credentials could not be obtained from the Cake app
-    via the `db-credentials` script.
+    Executes a mysqldump of the Cake app's `default` database
+    into a ZIP file located in a backups/ folder in the project
+    root (created if necessary). Outputs the ZIP file's size as
+    a crude verification step. Should be run from the project
+    root folder. Will exit with an error code of 1 if database
+    credentials could not be obtained from the Cake app via the
+    `db-credentials` script.
 
 Usage:
     bin/${script}
 
+EOD;
 
-EOT;
-
-	exit(0);
+	echo $usage;
+	exit($exitCode);
 }
+
+/**
+ * Convert numeric bytes into human-readable format.
+ *
+ * Example: 1535 ==> 1.50K.
+ * Note that this only works with integer byte values.
+ *
+ * @param int $bytes Integer number of bytes to translate.
+ * @param int $decimals Number of decimal places to preserve in output.
+ * @return string The converted value with the "closest" unit used.
+ */
+function human_filesize($bytes, $decimals = 2) {
+	$sz = 'BKMGTP';
+	$factor = floor((strlen(intval($bytes)) - 1) / 3);
+	return (sprintf("%.{$decimals}f", intval($bytes) / pow(1024, $factor)) + 0) . @$sz[$factor];
+}
+
+/**
+ * main() ===================================================================
+ */
+
 if (isset($argv[1]) && $argv[1] == '-h') {
 	usage();
 }
-
 
 // Set up variables.
 $dir = getcwd();
 $backupDir = $dir . '/backups';
 $date = date('Ymd-His');
 try {
-	$db = new DbConfig();
+	$credentialsScript = "{$dir}/bin/db-credentials";
+	if (!is_readable($credentialsScript)) {
+		echo "!! DB credentials are not available. Aborting.";
+		exit(3);
+	}
+	
+	ob_start(); // Capture the shebang line from db-credentials.
+	$db = include($credentialsScript);
+	ob_get_clean(); // Flush it.
+
+	if ($db instanceof \Exception) {
+		echo $db->getMessage();
+		exit(4);
+	}
 } catch (Exception $e) {
+	echo $e->getMessage();
 	exit(1);
 }
 
 // Create an appropriate password clause for the command line.
-if (empty($db->default['password'])) {
+if (empty($db->password)) {
 	$passClause = '';
 } else {
-	$passClause = ' --password=' . escapeshellcmd($db->default['password']);
+	$passClause = ' --password=' . escapeshellcmd($db->password);
 }
 
 // Create the backup directory if it doesn't exist.
@@ -52,51 +92,16 @@ if(!file_exists($backupDir) || !is_dir($backupDir)) {
 }
 
 // Build the command lines to execute.
-$sqlFile = $backupDir . "/{$db->default['database']}_{$date}.sql";
+$sqlFile = $backupDir . "/{$db->database}_{$date}.sql";
 $zipFile = "{$sqlFile}.zip";
-$dumpCmd = "mysqldump --host={$db->default['host']} --user={$db->default['login']}{$passClause} {$db->default['database']} > {$sqlFile}\n";
+$dumpCmd = "mysqldump --host={$db->host} --user={$db->username}{$passClause} {$db->database} > {$sqlFile}\n";
 $compressCmd = "zip -jrq8 {$zipFile} {$sqlFile}; rm {$sqlFile}";
-//echo $db->default['database'] . ' ' . $db->default['login'] . ' ' . $db->default['password'] . "\n";
+//echo $db->database . ' ' . $db->username . ' ' . $db->password . "\n";
 
 // Execute the commands.
-echo "## Backing up database '{$db->default['database']}' to: {$zipFile}\n";
+echo "## Backing up database '{$db->database}' to: {$zipFile}\n";
 system($dumpCmd);
 system($compressCmd);
 echo "## Database backup complete: " . human_filesize(filesize($zipFile)) . PHP_EOL;
 
-//----------
-function human_filesize($bytes, $decimals = 2) {
-	$sz = 'BKMGTP';
-	$factor = floor((strlen(intval($bytes)) - 1) / 3);
-	return (sprintf("%.{$decimals}f", intval($bytes) / pow(1024, $factor)) + 0) . @$sz[$factor];
-}
 
-//----------
-class DbConfig {
-	public $default = array();
-	public function __construct() {
-		$dir = getcwd();
-		$cmd = escapeshellcmd("{$dir}/bin/db-credentials");
-		$response = array();
-		$code = 0;
-		exec($cmd, $response, $code);
-
-		if (empty($response) || $code > 0) {
-			throw new RuntimeException('Unable to fetch Database config from db-credentials.');
-		}
-
-		foreach ($response as $line) {
-			if (!substr_count($line, '=')) {
-				continue;
-			}
-			list($key, $val) = explode('=', $line, 2);
-			$key = strtolower(str_replace('DB_', '', $key));
-			$val = substr($val, 1, -1);
-			$this->default[$key] = $val;
-		}
-
-		if (empty($this->default)) {
-			throw new RuntimeException('No Database config found.');
-		}
-	}
-}

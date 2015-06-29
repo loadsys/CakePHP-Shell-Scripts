@@ -6,9 +6,10 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Uses Cake's Config/database.php file to start a command line
-    mysql session with the correct host, database, user and password.
-    Should be run from the project root folder.
+    Uses the db-credentials script to start a command line mysql
+    session with the correct host, database, user and password.
+    Should be run from the project root folder. Passes all command
+    line arguments (except for \`-h\`) to mysql.
 
 Usage:
     bin/${0##*/}
@@ -29,13 +30,21 @@ BIN_DIR="$DIR/bin"
 # Holy yuck, but nothing else works!
 eval $( ${BIN_DIR}/db-credentials )
 
-CMD="mysql --host=${DB_HOST} --database=${DB_DATABASE} --user=${DB_LOGIN}"
-PATTERN=" |'"
-
-if [[ ${DB_PASSWORD} =~ ${PATTERN} ]]; then
-	${CMD} -p"${DB_PASSWORD}"
-elif [ -n "${DB_PASSWORD}" ]; then
-	${CMD} -p${DB_PASSWORD}
+# Set a custom port, if provided to us.
+if [ -n "${DB_PORT}" ]; then
+	PORT_CLAUSE="--port=${DB_PORT}"
 else
-	${CMD}
+	PORT_CLAUSE=""
+fi
+
+# Define the primary command line.
+CMD="mysql --host=${DB_HOST} ${PORT_CLAUSE} --database=${DB_DATABASE} --user=${DB_USERNAME}"
+
+# Handle all the different ways to provide (or not provide) a password.
+if [[ $DB_PASSWORD =~ " |'" ]]; then
+	$CMD -p"${DB_PASSWORD}" "$@"
+elif [ -n "${DB_PASSWORD}" ]; then
+	$CMD -p$DB_PASSWORD "$@"
+else
+	$CMD "$@"
 fi
