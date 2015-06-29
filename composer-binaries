@@ -9,14 +9,15 @@
 /**
  * Prints usage information and exits.
  *
- * @param string $scriptName Typically set to basename($argv[0]) when the method is called.
+ * @param string $script Typically set to basename($argv[0]) when the method is called.
+ * @param int $exitCode The numeric exit code to return. 0 = success. >0 = failure.
  * @return void
  */
-function usage ($scriptName, $exitCode = 0) {
+function usage($script = null, $exitCode = 0) {
+	$script = $script ?: basename(__FILE__);
 	$usage = <<<EOD
 
-{$scriptName} 
-
+{$script} 
 	Searches the directory this script lives in for other executable files.
 	Generates a list of all _other_ executable files (exculding itself) in
 	the same directory of this script and replaces the "bin" configuration
@@ -28,7 +29,7 @@ function usage ($scriptName, $exitCode = 0) {
 	projects that require this package.
 
 Usage:
-    ./{$scriptName} 
+    bin/{$script} 
 
 
 EOD;
@@ -42,10 +43,11 @@ EOD;
  * any non-executables from the given directory.
  */
 class ExeIterator extends FilterIterator {
+
 	/**
-	 * Stores the name of the current script to strip ot from output.
+	 * Stores the name of the current script to strip out from output.
 	 *
-	 * @var string $selfName
+	 * @var string
 	 */
 	private $selfName = null;
 
@@ -66,7 +68,7 @@ class ExeIterator extends FilterIterator {
 	 * false for dot directories (. and ..), the currently executing script,
 	 * and anything that is not set as executable.
 	 *
-	 * @return boolean True if current file is executable and not ourself, false otherwise.
+	 * @return bool True if current file is executable and not ourself, false otherwise.
 	 */
 	public function accept() {
 		$f = parent::current();
@@ -96,7 +98,7 @@ class ExeIterator extends FilterIterator {
  * OR of all available options, suitable for passing as the second argument
  * to `json_encode()`.
  *
- * @return integer The bitwise OR-ing of all valid and available JSON_* options.
+ * @return int The bitwise OR-ing of all valid and available JSON_* options.
  */
 function json_opts() {
 	$bitwise = 0;
@@ -112,7 +114,7 @@ function json_opts() {
  * main() ===================================================================
  */
 
-$options = getopt('h', array());
+$options = getopt('h', []));
 $dir = dirname(__FILE__);
 $composerFile = $dir . '/composer.json';
 $selfName = basename($argv[0]);
@@ -124,6 +126,12 @@ if (isset($options['h'])) {
 $executables = array_values(iterator_to_array(new ExeIterator($dir, $selfName)));
 $composerJson = json_decode(file_get_contents($composerFile), $assoc = false);
 $composerJson->bin = $executables;
-file_put_contents($composerFile, json_encode($composerJson, json_opts('JSON_UNESCAPED_SLASHES', 'JSON_PRETTY_PRINT')));
+file_put_contents(
+	$composerFile,
+	json_encode(
+		$composerJson,
+		json_opts('JSON_UNESCAPED_SLASHES', 'JSON_PRETTY_PRINT')
+	)
+);
 
 echo "{$composerFile} updated." . PHP_EOL . PHP_EOL;

@@ -2,13 +2,18 @@
 <?php
 // @ref: http://ocramius.github.io/blog/automated-code-coverage-check-for-github-pull-requests-with-travis/
 
-//----------
-function usage()
-{
-	$script = basename(__FILE__);
-	echo <<<EOT
+/**
+ * Prints usage information and exits.
+ *
+ * @param string $script Typically set to basename($argv[0]) when the method is called.
+ * @param int $exitCode The numeric exit code to return. 0 = success. >0 = failure.
+ * @return void
+ */
+function usage($script = null, $exitCode = 0) {
+	$script = $script ?: basename(__FILE__);
+	$usage = <<<EOD
 
-${script} [coverage_percent] [clover.xml]
+{$script}
     Uses the provided Clover XML code coverage report value to calculate
     the percentage of code covered by phpunit unit tests. Compares that
     percentage to  the provided integer value, and if coverage is lower
@@ -18,7 +23,7 @@ ${script} [coverage_percent] [clover.xml]
     code coverage remains above a designated percentage.
 
 Usage:
-    bin/${script}
+    bin/${script} [coverage_percent] [clover.xml]
 
     coverage_percent - Optional integer value between 0 and 100 represented
                        the minimum required percentage of coverage required.
@@ -30,10 +35,17 @@ Usage:
                        project's phpunit.xml[.dist] file and will exit
                        with an error if this fails.
 
-EOT;
+EOD;
 
-	exit(0);
+	echo $usage;
+	exit($exitCode);
 }
+
+
+/**
+ * main() ===================================================================
+ */
+
 if (isset($argv[1]) && $argv[1] == '-h') {
 	usage();
 }
