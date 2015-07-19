@@ -36,7 +36,7 @@ FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
 CODE_STANDARD="vendor/loadsys/loadsys_codesniffer/Loadsys"
-SNIFF_FOLDERS=("${SRC_DIR}/Controller" "${SRC_DIR}/Model" "${SRC_DIR}/View" "${SRC_DIR}/Lib" "${SRC_DIR}/Console/Shell")
+SNIFF_FOLDERS=("${SRC_DIR}/Controller" "${SRC_DIR}/Model" "${SRC_DIR}/View" "${SRC_DIR}/Lib" "${SRC_DIR}/Shell")
 SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. This script will therefore always exit 0.
 
 # Bail out if phpcs isn't available to us.
