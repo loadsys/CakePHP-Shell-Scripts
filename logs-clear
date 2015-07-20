@@ -10,7 +10,7 @@ ${0##*/}
     recover disk space from aggressive logs. (A better option is to
     configure \`logrotate\` to cycle, compress and purge the files
     over time.)
-    
+
     Should be run from the project root folder.
 
 Usage:
@@ -19,7 +19,7 @@ Usage:
 
 EOT
 
-	exit 0
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
 if [ "$1" = '-h' ]; then
 	usage

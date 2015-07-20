@@ -17,7 +17,7 @@ Usage:
 
 EOT
 
-	exit 0
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
 if [ "$1" = '-h' ]; then
 	usage

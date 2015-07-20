@@ -6,11 +6,11 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Designed to perform all the necessary steps to update a local 
-    copy of the project from the remote repo, which is assumed to 
-    be "ahead" of the local copy. Mainly intended for use in 
-    staging and production environments to ensure that code "pushes" 
-    are performed consistently every time. Should be run from the 
+    Designed to perform all the necessary steps to update a local
+    copy of the project from the remote repo, which is assumed to
+    be "ahead" of the local copy. Mainly intended for use in
+    staging and production environments to ensure that code "pushes"
+    are performed consistently every time. Should be run from the
     project root folder.
 
 Usage:
@@ -34,7 +34,7 @@ Environment Variables:
 
 EOT
 
-	exit 0
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
 if [ "$1" = '-h' ]; then
 	usage
@@ -129,7 +129,7 @@ git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
 	echo "## Deferring database migrations until after merge."
 elif [ "$DB_UPDATES_METHOD" = 'db_updates' ]; then
-	# Show manual pending DB updates to user. (Or use possibly use bin/db-apply-updates here to execute the SQL against the DB automatically, 
+	# Show manual pending DB updates to user. (Or use possibly use bin/db-apply-updates here to execute the SQL against the DB automatically,
 	# which should be fairly recoverable if it's wrong [which it can be] considering we have already made a backup.)
 	DB_CHANGES="$( $BIN_DIR/db-show-updates $EXISTINGCOMMIT $ARG_NEWCOMMIT)"
 	if [ -n "$DB_CHANGES" ]; then

@@ -20,7 +20,7 @@ Usage:
 
 EOT
 
-	exit $1
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
 
 
