@@ -11,7 +11,7 @@ ${0##*/}
     the presence or absence of a composer.json file. Can be safely
     called even if these items are missing (with the result being
     essentially a no-op and >0 exit code.)
-    
+
     There is a certain amount of irony in this script being
     included in a composer package, since you would have had to
     already run 'composer install' in order to have access to this
@@ -26,7 +26,7 @@ Usage:
 
 EOT
 
-	exit 0
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
 if [ "$1" = '-h' ]; then
 	usage

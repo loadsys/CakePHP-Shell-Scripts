@@ -11,65 +11,76 @@ ${0##*/}
     to the standard output.
 
 Usage:
-    bin/${0##*/} [save reports?]
+    bin/${0##*/} [-f|h|n|x]
 
-    Specify 'y' as the first argument to save reports in the tmp directory,
-    else full and summary reports are generated but not saved to a file.
-
+    f - Write full and summary report out to files.
+    h - Print this help information.
+    n - Suppress warnings during the sniff run.
+    x - Always exit zero regardless of sniff results.
 
 EOT
 
-	exit 0
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
-if [ "$1" = '-h' ]; then
-	usage
-fi
 
+
+# Set up local variables.
 umask a+rw
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-BIN_DIR="${DIR}/bin"
 TMP_DIR="${DIR}/tmp"
-SRC_DIR="${DIR}/src"
 REPORT_DIR="${TMP_DIR}/code-sniffs"
 FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
-CODE_STANDARD="vendor/loadsys/loadsys_codesniffer/Loadsys"
-SNIFF_FOLDERS=("${SRC_DIR}/Controller" "${SRC_DIR}/Model" "${SRC_DIR}/View" "${SRC_DIR}/Lib" "${SRC_DIR}/Console/Shell")
-SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. This script will therefore always exit 0.
+CODE_STANDARD="vendor/cakephp/cakephp-codesniffer/CakePHP,vendor/loadsys/loadsys_codesniffer/Loadsys"
+SNIFF_FOLDERS=("./src" "./plugins" "./tests" "./config" "./webroot")
+SNIFF_FAIL_CAUSES_SCRIPT_FAIL=0 # 0 = true. Script will exit with phpcs's return code.
 
-# Bail out if phpcs isn't available to us.
-PHPCS="$( which phpcs )"
-if [ $? -gt 0 ]; then
-	PHPCS="$BIN_DIR/phpcs"
-	test -x $PHPCS
-fi
-if [ $? -gt 0 ]; then
-	echo "!! The 'phpcs' command was not found on this system."
-	echo ""
-	exit 1
-fi
-echo "## Found phpcs at: ${PHPCS}"
+SAVE_REPORTS=1  # 1 = false. DON'T save reports when no args provided.
+COVERAGE="--report-full --report-summary"
+SUPPRESS_WARNINGS=""
 
-if [ -z "$1" ]; then
-	echo "## Printing reports..."
-	SAVE_REPORTS=1  # 1 = false. DON'T save reports when no args provided.
-	COVERAGE="--report-full --report-summary"
-else
-	echo "## Saving reports..."
-	SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
-	COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
-	mkdir -p "$REPORT_DIR"
-fi
 
-"$PHPCS" -p --extensions=php --standard="$CODE_STANDARD" ${COVERAGE} ${SNIFF_FOLDERS[@]}
+# Process command line options.
+while getopts ":fhnx" opt; do
+	case $opt in
+		f)
+			SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
+			COVERAGE="--report-full=${FULL_REPORT_FILE} --report-summary=${SUMMARY_REPORT_FILE}"
+			mkdir -p "$REPORT_DIR"
+			;;
+		h)
+			usage 0
+			;;
+		n)
+			SUPPRESS_WARNINGS="-n"
+			;;
+		x)
+			SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. Always exit 0;
+			;;
+		\?)
+			echo "Invalid option: -$OPTARG" >&2
+			usage 1
+			;;
+	esac
+done
+
+
+# Run the sniffs.
+bin/phpcs -p $SUPPRESS_WARNINGS \
+ --extensions=php \
+ --standard="$CODE_STANDARD" \
+ ${COVERAGE} \
+ ${SNIFF_FOLDERS[@]}
+
 SNIFF_RESULT=$?
 
 if [ $SAVE_REPORTS -eq 0 ]; then
 	echo "## Full report created at: ${FULL_REPORT_FILE}"
 	echo "## Summary report created at: ${SUMMARY_REPORT_FILE}"
 fi
+
 
 # Exit based on whether sniff fails should count as a "failure".
 if [ $SNIFF_FAIL_CAUSES_SCRIPT_FAIL -eq 0 ]; then
