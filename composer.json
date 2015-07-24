@@ -26,6 +26,7 @@
         "db-credentials",
         "db-login",
         "db-sample-data",
+        "deploy",
         "docs-generate",
         "email",
         "folder-delete-items-older-than-days",
@@ -39,7 +40,6 @@
         "owner-set",
         "rename-empty",
         "tests-run",
-        "update",
         "vagrant-exec"
     ]
 }
