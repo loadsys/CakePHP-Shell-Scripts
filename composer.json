@@ -22,6 +22,7 @@
         "codesniffer-run",
         "composer-install",
         "coverage-ensure",
+        "coverage-report",
         "db-backup",
         "db-credentials",
         "db-login",
