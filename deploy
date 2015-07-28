@@ -21,7 +21,7 @@ Usage:
           Default: (The remote tracking branch for the
                    currently-checked-out branch.)
     \$2 = The local config file "environment" to use.
-          Default: $APP_ENV if set, 'prod' if not.
+          Default: \$APP_ENV if set, 'prod' if not.
 
 Environment Variables:
           APP_ENV = If set and \$2 is blank, will be used as the active
