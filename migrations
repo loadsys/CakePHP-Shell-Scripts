@@ -30,7 +30,7 @@ DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 if [ "$1" ]; then
 	OPTION=$1;
 else
-	OPTION="run all";
+	OPTION="migrate";
 fi
 
 if [ "$2" ]; then
@@ -47,5 +47,5 @@ else
 fi
 
 $DIR/bin/cache-clear
-$DIR/bin/cake Migrations.migration $OPTION $PLUGIN
+$DIR/bin/cake Migrations.migrations $OPTION $PLUGIN
 $DIR/bin/cache-clear
