@@ -65,7 +65,7 @@ try {
 		echo "!! DB credentials are not available. Aborting.";
 		exit(3);
 	}
-	
+
 	ob_start(); // Capture the shebang line from db-credentials.
 	$db = include($credentialsScript);
 	ob_get_clean(); // Flush it.
