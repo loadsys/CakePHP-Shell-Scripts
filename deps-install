@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Convenience wrapper that runs "install" commands for all common
+    dependency management tools (currently composer and npm.) "Install" means
+    slightly different things in each context, but at the end of this script
+    execution, the goal is for all configured dependencies to be present at the
+    configured version level.
+
+    A production environment is assumed and no dev dependencies are installed.
+    To override this, just add "dev" as the only parameter.
+
+    Used by the init-repo and update scripts.
+
+Usage:
+    bin/${0##*/} [dev]
+
+EOT
+
+	exit 0
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+BINDIR="${DIR}/bin"
+COMPOSER_CONFIG_FILE="$DIR/composer.json"
+NPM_CONFIG_FILE="$DIR/package.json"
+COMPOSER_NO_DEV_OPTION="--no-dev"
+NPM_PRODUCTION_OPTION="--production"
+
+if  [ "$1" = 'dev' ]; then
+	COMPOSER_NO_DEV_OPTION=""
+	NPM_PRODUCTION_OPTION=""
+fi
+
+echo "## Running installs for all dependency management tools found.";
+
+# Install composer packages using versions specified in config/lock file.
+if [ -e "$COMPOSER_CONFIG_FILE" ]; then
+	COMPOSER="$( which composer )"
+	if [ $? -gt 0 ]; then
+		echo "!! Found composer config file '$COMPOSER_CONFIG_FILE', but composer is not present on this system."
+		exit 2
+	else
+		echo "## Found composer at: ${COMPOSER}"
+		"$COMPOSER" install --no-interaction $COMPOSER_NO_DEV_OPTION
+		"$COMPOSER" dumpautoload --optimize
+	fi
+fi
+
+# Install npm modules using versions specified in config file.
+if [ -e "$NPM_CONFIG_FILE" ]; then
+	NPM="$( which npm )"
+	if [ $? -gt 0 ]; then
+		echo "!! Found npm config file '$NPM_CONFIG_FILE', but npm is not present on this system."
+		exit 3
+	else
+		echo "## Found npm at: ${NPM}"
+		"$NPM" install $NPM_PRODUCTION_OPTION
+	fi
+fi

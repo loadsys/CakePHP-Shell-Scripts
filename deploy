@@ -133,7 +133,7 @@ fi
 
 
 # Make sure any external packages are installed and available.
-composer install --no-interaction
+$BIN_DIR/deps-install
 
 
 # Purge cache folders.
