@@ -1,0 +1,83 @@
+#!/usr/bin/env php
+<?php
+namespace Loadsys\CakePHPShellScripts\DbImport;
+
+/**
+ * Prints usage information and exits.
+ *
+ * @param string $script Typically set to basename($argv[0]) when the method is called.
+ * @param int $exitCode The numeric exit code to return. 0 = success. >0 = failure.
+ * @return void
+ */
+function usage($script = null, $exitCode = 0) {
+	$script = $script ?: basename(__FILE__);
+	$usage = <<<EOD
+
+${script}
+    Imports an sql file. By default will import `config/sql/database.sql`.
+
+    Will exit with an error code of 1 if database credentials could not be
+	obtained from the Cake app via the `db-credentials` script.
+
+Usage:
+    bin/${script} [file]
+
+EOD;
+
+	echo $usage;
+	exit($exitCode);
+}
+
+/**
+ * main() ===================================================================
+ */
+
+if (isset($argv[1]) && $argv[1] == '-h') {
+	usage();
+}
+
+// Set up variables.
+$dir = getcwd();
+$sourceFile = isset($argv[1]) ? $argv[1] : "config/sql/database.sql";
+
+//TODO - do not allow going beyond $dir
+
+if(!file_exists("{$dir}/{$sourceFile}")) {
+	echo "!! File to import ({$dir}/{$sourceFile}) does not exist or is not readable. Aborting." . PHP_EOL;
+	exit(2);
+}
+
+try {
+	$credentialsScript = "{$dir}/bin/db-credentials";
+	if (!is_readable($credentialsScript)) {
+		echo "!! DB credentials are not available. Aborting." . PHP_EOL;
+		exit(3);
+	}
+
+	ob_start(); // Capture the shebang line from db-credentials.
+	$db = include($credentialsScript);
+	ob_get_clean(); // Flush it.
+
+	if ($db instanceof \Exception) {
+		echo $db->getMessage();
+		exit(4);
+	}
+} catch (Exception $e) {
+	echo $e->getMessage();
+	exit(1);
+}
+
+// Create an appropriate password clause for the command line.
+if (empty($db->password)) {
+	$passClause = '';
+} else {
+	$passClause = ' --password=' . escapeshellcmd($db->password);
+}
+
+// Build the command to execute.
+$importCmd = "mysql --host={$db->host} --user={$db->username} -p{$db->password} {$db->database} < {$dir}/{$sourceFile}";
+
+// Execute the commands.
+echo "## Importing file '{$sourceFile}'." . PHP_EOL;
+system($importCmd);
+echo "## File {$sourceFile} has been imported." . PHP_EOL;
