@@ -34,11 +34,13 @@ BINDIR="${DIR}/bin"
 COMPOSER_CONFIG_FILE="$DIR/composer.json"
 NPM_CONFIG_FILE="$DIR/package.json"
 COMPOSER_NO_DEV_OPTION="--no-dev"
+NPM_RUN=false
 NPM_PRODUCTION_OPTION="--production"
 
 if  [ "$1" = 'dev' ]; then
 	COMPOSER_NO_DEV_OPTION=""
 	NPM_PRODUCTION_OPTION=""
+	NPM_RUN=true
 fi
 
 echo "## Running installs for all dependency management tools found.";
@@ -57,7 +59,7 @@ if [ -e "$COMPOSER_CONFIG_FILE" ]; then
 fi
 
 # Install npm modules using versions specified in config file.
-if [ -e "$NPM_CONFIG_FILE" ]; then
+if [ $NPM_RUN ] && [ -e "$NPM_CONFIG_FILE" ]; then
 	NPM="$( which npm )"
 	if [ $? -gt 0 ]; then
 		echo "!! Found npm config file '$NPM_CONFIG_FILE', but npm is not present on this system."
