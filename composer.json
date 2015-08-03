@@ -25,6 +25,7 @@
         "coverage-ensure",
         "db-backup",
         "db-credentials",
+        "db-import",
         "db-login",
         "db-sample-data",
         "deploy",
