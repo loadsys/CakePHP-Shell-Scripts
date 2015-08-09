@@ -68,7 +68,7 @@ done
 
 
 # Run the sniffs.
-bin/phpcs -p $SUPPRESS_WARNINGS \
+bin/phpcs -ps $SUPPRESS_WARNINGS \
  --extensions=php \
  --standard="$CODE_STANDARD" \
  ${COVERAGE} \
