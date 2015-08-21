@@ -1,12 +1,11 @@
 # Loadsys Cake Command Line Scripts
 
-**DISCLAIMER: We use these tools ourselves, but that doesn't mean they will necessarily work for you in your situation. This repo is public in case it can be of use to anyone else (and because it's convenient for us), but it _is not supported_ and _may change without notice_. Issues and contributions may be flat out ignored if they don't impact us. You have been warned!**
+This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below. Coordinates heavily with the [Loadsys CakePHP App Skeleton](https://github.com/loadsys/CakePHP-Skeleton).
 
-This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below.
+* This is the `master` branch and along with the `3.x.x` releases is meant for use with Cake 3 projects exclusively.
+* The [`cake-2.x`](https://github.com/loadsys/CakePHP-Shell-Scripts/tree/cake-2.x) branch and `2.x.x` releases are meant for Cake 2.x projects that use composer (git submodules are still supported).
 
-* The master branch is meant for use with Cake 3 projects exclusively.
-* The 2.x branch is meant for Cake 2.x projects that use composer (git submodules are still supported).
-* The 1.x branch is tuned for Cake 1.x projects that use git submodules for dependency management.
+
 * Most scripts listed below can take a `-h` option as their first argument to output usage information.
 * Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
 * Most are designed to fail gracefully with a non-zero exit code.
@@ -134,6 +133,8 @@ It can also take a partial filename as an argument and run the corresponding tes
 ## License
 
 [MIT](LICENSE.md)
+
+**DISCLAIMER: We use these tools ourselves, but that doesn't mean they will necessarily work for you in your situation. This repo is public in case it can be of use to anyone else (and because it's convenient for us), but it _is not supported_ and _may change without notice_. Issues and contributions may be ignored if they don't impact us. You have been warned!**
 
 
 ## Copyright
