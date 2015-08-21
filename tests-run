@@ -1,40 +1,116 @@
-#!/usr/bin/env bash
+#!/usr/bin/env php
+<?php
+namespace Loadsys\CakePHPShellScripts\TestsRun;
 
-#---------------------------------------------------------------------
-usage ()
-{
-	cat <<EOT
+/**
+ * Prints usage information and exits.
+ *
+ * @param string $script Typically set to basename($argv[0]) when the method is called.
+ * @param int $exitCode The numeric exit code to return. 0 = success. >0 = failure.
+ * @return void
+ */
+function usage($script = null, $exitCode = 0) {
+	$script = $script ?: basename(__FILE__);
+	$usage = <<<EOD
 
-${0##*/}
-    Convenience wrapper around PHPUnit's Test Command along with passing
-    the correct configuration file path.
+${script}
+    Convenience wrapper around PHPUnit test runner.
+
+    Clears the Cake app's Caches and either executes the entire
+    test suite, or tests only the named file.
 
 Usage:
-    bin/${0##*/} [generate coverage]
+    bin/${script}
+
+    If any of the arguments are a path to a specific (existant)
+    file, the test for it will be called directly. This script
+    will automatically try to append ".php" to find a match.
+    If the named file is not a Test case itself, the script will
+    attempt to locate the counterpart test. For example, all of
+    the following inputs translate to the given TestCase:
+
+	src/Controller/UsersController
+	src/Controller/UsersController.php
+	tests/TestCase/Controller/UsersController
+	tests/TestCase/Controller/UsersController.php
+
+	 --> tests/TestCase/Controller/UsersControllerTest.php
+
+	This is intended to allow this script to be paired with a
+	file watcher. When a source or test file changes, that
+	filename can be passed to this script to have the test case
+	automatically executed inside the vagrant environment.
 
 
-EOT
+EOD;
 
-	exit 0
+	echo $usage;
+	exit($exitCode);
 }
-if [ "$1" = '-h' ]; then
-	usage
-fi
+
+/**
+ * Locate the appropriate TestCase file for the provided $path.
+ *
+ * Applies a series of transformations to the provided path in an attempt
+ * to locate the TestCase file to execute for the $path. When a readable
+ * file is found, it is returned. Returns the original unmodified string
+ * on failure.
+ *
+ * Examples:
+ *    src/Controller/UsersController
+ *    src/Controller/UsersController.php
+ *    tests/TestCase/Controller/UsersController
+ *    tests/TestCase/Controller/UsersController.php
+ *
+ *    --> tests/TestCase/Controller/UsersControllerTest.php
+ *
+ * @param string $path An (assumed) filesystem path for a source or test file to execute.
+ * @return string The (possibly transformed) path to the counterpart TestCase file.
+ * @link https://github.com/cakephp/cakephp/blob/2.6.9/lib/Cake/Console/Command/TestShell.php#L334
+ */
+function findTestCase($path) {
+	$p = $path;
+	if (substr($p, -4) !== '.php') {
+		$p .= '.php';
+	}
+
+	$p = str_replace(getcwd() . DIRECTORY_SEPARATOR, '', realpath($p));
+	$p = preg_replace('|^src/|', 'tests/TestCase/', $p, -1, $replaceCount);
+	if ($replaceCount) {
+		$p = preg_replace('|/(.+).php$|', '/\1Test.php', $p);
+	}
+
+	if (is_readable($p)) {
+		return $p;
+	}
+
+	return $path;
+}
 
 
-umask a+rw
+/**
+ * main() ===================================================================
+ */
 
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-BIN_DIR="${DIR}/bin"
-TMP_DIR="${DIR}/tmp"
-PHPUNIT_CONFIG="phpunit.xml"
+if (isset($argv[1]) && $argv[1] == '-h') {
+	usage();
+}
 
-# if [ -n "$1" ]; then
-# 	TESTCASE=$1
-# 	shift  # Knock off the first argument to this script so the rest will be passed to the TestShell.
-# else
-# 	TESTCASE="All"
-# fi
+// Set up variables.
+array_shift($argv); // Strip the script name off and throw it away.
+$argc--; // Reindex argc so we can use it directly on remaining args.
 
-bin/cache-clear
-bin/vagrant-exec "${BIN_DIR}/phpunit --configuration="${PHPUNIT_CONFIG}" "$@""
+if ($argc) {
+	$args = array_map('Loadsys\CakePHPShellScripts\TestsRun\findTestCase', $argv);
+	$args = array_map('escapeshellarg', $args);
+	$args = implode(' ', $args);
+// 	$args = '"' . $args . '"';
+	$args = ' ' . $args;
+} else {
+	$args = '';
+}
+
+$testCmd = "bin/vagrant-exec \"bin/phpunit{$args}\"";
+
+//echo "## Running: `{$testCmd}`" . PHP_EOL;
+system($testCmd);

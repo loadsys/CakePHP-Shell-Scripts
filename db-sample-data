@@ -16,6 +16,10 @@ ${0##*/}
 Usage:
     bin/${0##*/} [table] [table2] [table3]
 
+Environment:
+    DB_SAMPLE_DATA_URL - If this environment variable is set, it will
+                         be used when displaying the download URL for
+                         the temporary zip file.
 
 EOT
 
@@ -30,28 +34,44 @@ if [ -z "$1" ]; then
 else
 	TABLES="--tables "$*""
 fi
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-APP_DIR="$DIR"
-BIN_DIR="${DIR}/bin"
 
 
 # Configuration vars. Set these appropriately for your app and environment.
-PUBLIC_URL=""
-WEBROOT_PATH="$APP_DIR/webroot/"
+PUBLIC_URL=${DB_SAMPLE_DATA_URL:-}
+WEBROOT_PATH="webroot/"
 
 
 # Internal var setup.
-eval $( ${BIN_DIR}/db-credentials ) # Yuck, but nothing else works!
-DATE=$(date +%Y-%m-%d)
+eval $( bin/db-credentials ) # Yuck, but nothing else works!
 OPTIONS="--skip-add-drop-table --no-create-info"
-TMP_PATH="$APP_DIR/tmp/"
-DESTINATION_NAME="${DB_NAME}_sample_data_${DATE}"
+TMP_PATH="tmp"
+DESTINATION_NAME="${DB_DATABASE}_sample_data_$(date +%Y-%m-%d)"
 
-# Generate the dump, compress it and move it into place.
-cd "${TMP_PATH}"
-mysqldump --host="${DB_HOST}" --user="${DB_USER}" -p${DB_PASS} ${OPTIONS} ${DB_NAME} $TABLES > "${DESTINATION_NAME}.sql"
-zip -rq9 "${WEBROOT_PATH}${DESTINATION_NAME}.zip" "${DESTINATION_NAME}.sql"
-rm -f "${DESTINATION_NAME}.sql"
+
+# Generate the dump command.
+if [ -n "$DB_PORT" ]; then
+	PORT_CLAUSE="--port=$DB_PORT"
+fi
+CMD="mysqldump --host=${DB_HOST} ${PORT_CLAUSE} --user=${DB_USERNAME} ${OPTIONS} ${DB_DATABASE} $TABLES"
+
+
+# Run the dump command.
+# Handle all the different ways to provide (or not provide) a password.
+pushd "${TMP_PATH}" >/dev/null
+if [[ $DB_PASSWORD =~ " |'" ]]; then
+	$CMD -p"${DB_PASSWORD}" > "${DESTINATION_NAME}.sql"
+elif [ -n "${DB_PASSWORD}" ]; then
+	$CMD -p$DB_PASSWORD > "${DESTINATION_NAME}.sql"
+else
+	$CMD > "${DESTINATION_NAME}.sql"
+fi
+popd >/dev/null
+
+
+# Zip the file and remove the original .sql.
+zip -rq9 "${WEBROOT_PATH}${DESTINATION_NAME}.zip" "${TMP_PATH}/${DESTINATION_NAME}.sql"
+rm -f "${TMP_PATH}/${DESTINATION_NAME}.sql"
+
 
 # Prompt to download the file, then delete it.
 echo "## Download URL: ${PUBLIC_URL}/${DESTINATION_NAME}.zip"

@@ -42,7 +42,7 @@ EOD;
  * @return string The converted value with the "closest" unit used.
  */
 function human_filesize($bytes, $decimals = 2) {
-	$sz = 'BKMGTP';
+	$sz = 'BKMGTPEZY';
 	$factor = floor((strlen(intval($bytes)) - 1) / 3);
 	return (sprintf("%.{$decimals}f", intval($bytes) / pow(1024, $factor)) + 0) . @$sz[$factor];
 }
@@ -56,16 +56,15 @@ if (isset($argv[1]) && $argv[1] == '-h') {
 }
 
 // Set up variables.
-$dir = getcwd();
-$backupDir = $dir . '/backups';
+$backupDir = 'backups';
 $date = date('Ymd-His');
 try {
-	$credentialsScript = "{$dir}/bin/db-credentials";
+	$credentialsScript = 'bin/db-credentials';
 	if (!is_readable($credentialsScript)) {
 		echo "!! DB credentials are not available. Aborting.";
 		exit(3);
 	}
-	
+
 	ob_start(); // Capture the shebang line from db-credentials.
 	$db = include($credentialsScript);
 	ob_get_clean(); // Flush it.

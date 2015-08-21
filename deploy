@@ -14,17 +14,14 @@ ${0##*/}
     project root folder.
 
 Usage:
-    bin/${0##*/} [tag|branch|sha|ref] [dev|prod|staging] [user] [group]
+    bin/${0##*/} [tag|branch|sha|ref] [dev|prod|staging]
 
     \$1 = The new commit to which to update.
           Will be merged into the current branch/commit.
-          Default: (The remote tracking branch for the currently-checked-out branch.)
+          Default: (The remote tracking branch for the
+                   currently-checked-out branch.)
     \$2 = The local config file "environment" to use.
           Default: $APP_ENV if set, 'prod' if not.
-    \$3 = The local user to associate the project with.
-          Default: owner of ./
-    \$4 = The local group to associate the project with.
-          Default: group of ./
 
 Environment Variables:
           APP_ENV = If set and \$2 is blank, will be used as the active
@@ -46,24 +43,16 @@ echo "## Starting update process."
 # Set variables.
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 BIN_DIR="$DIR/bin"
-CONFIG_DIR="$DIR/Config"
-MIGRATION_DIR="$CONFIG_DIR/Migration"
+CONFIG_DIR="$DIR/config"
+MIGRATION_DIR="$CONFIG_DIR/Migrations"
 SLEEP_TIME=10
-DEFAULT_DBUPDATES_FILE="$CONFIG_DIR/sql/db_updates.sql"
-DEFAULT_ENVVARS_FILE="$CONFIG_DIR/env_vars.txt"
 EXISTINGCOMMIT=$( git rev-parse HEAD )
 EXISTINGBRANCH=$( git rev-parse --abbrev-ref HEAD )
 
 if [ -d "$MIGRATION_DIR" ] && [ "$(ls -A $MIGRATION_DIR)" ]; then
 	DB_UPDATES_METHOD='migrations'
-elif [ -e "$DEFAULT_DBUPDATES_FILE" ]; then
-	DB_UPDATES_METHOD='db_updates'
 else
 	DB_UPDATES_METHOD='none'
-fi
-
-if [ -r $DEFAULT_ENVVARS_FILE ]; then
-	source "${DEFAULT_ENVVARS_FILE}"
 fi
 
 
@@ -81,18 +70,6 @@ elif [ -n "$APP_ENV" ]; then
 	ARG_APPENV="$APP_ENV"
 else
 	ARG_APPENV="prod"
-fi
-
-if [ $3 ]; then
-	ARG_OWNER=$3
-else
-	ARG_OWNER=""
-fi
-
-if [ $4 ]; then
-	ARG_GROUP=$4
-else
-	ARG_GROUP=""
 fi
 
 
@@ -128,22 +105,6 @@ git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 # Apply database updates, one way or another.
 if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
 	echo "## Deferring database migrations until after merge."
-elif [ "$DB_UPDATES_METHOD" = 'db_updates' ]; then
-	# Show manual pending DB updates to user. (Or use possibly use bin/db-apply-updates here to execute the SQL against the DB automatically,
-	# which should be fairly recoverable if it's wrong [which it can be] considering we have already made a backup.)
-	DB_CHANGES="$( $BIN_DIR/db-show-updates $EXISTINGCOMMIT $ARG_NEWCOMMIT)"
-	if [ -n "$DB_CHANGES" ]; then
-		echo "## There are database updates to apply!"
-		echo '---------'
-		echo ''
-		echo "$DB_CHANGES"
-		echo ''
-		echo '---------'
-		echo ''
-		read -p "Press [ENTER] to continue when these updates have been applied to the local DB."
-	else
-		echo "## No database updates to apply.";
-	fi
 elif [ "$DB_UPDATES_METHOD" = 'none' ]; then
 	echo "## Could not automatically determine database change tracking system."
 	read -p "## Make sure any pending DB changes have been made and press [ENTER] to continue."
@@ -175,19 +136,11 @@ $BIN_DIR/set-configs $ARG_APPENV
 
 
 # Make sure any external packages are installed and available.
-$BIN_DIR/deps-install
+composer install --no-interaction
 
 
 # Purge cache folders.
-$BIN_DIR/clear-cache
-
-
-# Set file ownership.
-$BIN_DIR/set-owner ${ARG_OWNER} ${ARG_GROUP}
-
-
-# Set write permissions.
-$BIN_DIR/writedirs
+$BIN_DIR/cache-clear
 
 
 # Send an email report if the ENV var is set in Config/env_vars.txt
@@ -197,6 +150,10 @@ if [ -n "${LOADSYS_EMAIL}" ]; then
 
 	cat > "$MSG_BODY" <<-EOD
 	A code push has been completed for ${LOADSYS_PROJECT_NAME}.
+
+	(Previous commit: ${EXISTINGCOMMIT})
+
+	-------------------------------------------------------
 
 	${GIT_LOG}
 

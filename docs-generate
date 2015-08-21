@@ -7,10 +7,10 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Convenience wrapper around phpDocumentor. Uses the config/phpdoc.xml
-    file to control execution. Any additional arguments will be passed to
-    phpdoc itself. By default, HTML docs will be generated in tmp/docs/.
-    Depends on phpdoc.php being installed into bin/ via composer.
+    Convenience wrapper around phpDocumentor. Any additional
+    arguments will be passed to phpdoc itself. By default, HTML docs
+    will be generated in tmp/docs/. Depends on phpdoc being
+    installed into bin/ via composer.
 
 Usage:
     bin/${0##*/} [additional phpdoc args]
@@ -24,17 +24,5 @@ if [ "$1" = '-h' ]; then
 fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-BIN_DIR="${DIR}/bin"
-CFG_FILE="$DIR/config/phpdoc.xml"
 
-# Bail out if phpcs isn't available to us
-PHPDOC="./bin/phpdoc"
-test -x $PHPDOC
-if [ $? -gt 0 ]; then
-	echo "!! The 'phpdoc' command was not found on this system."
-	echo ""
-	exit 1
-fi
-echo "## Found phpdoc at: ${PHPDOC}"
-
-bin/vagrant-exec ""${PHPDOC}" --config="${CFG_FILE}" "$@""
+bin/vagrant-exec "bin/phpdoc "$@""

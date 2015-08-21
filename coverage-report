@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Convenience wrapper to execute phpunit test suite, generate
+    html coverage and open it in your browser (if you're on a Mac.)
+
+    Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+COVERAGE_PATH="tmp/coverage/html"
+
+
+# Launch the coverage in a browser if we're on the host.
+if command -v 'open' >/dev/null 2>&1 && command -v 'vagrant' >/dev/null 2>&1; then
+    bin/vagrant-exec "bin/phpunit --coverage-html="$COVERAGE_PATH""
+    open "${COVERAGE_PATH}/index.html"
+else
+    bin/phpunit --coverage-html="$COVERAGE_PATH"
+    echo ""
+    echo "## Run 'open ${COVERAGE_PATH}/index.html'"
+    echo "## from your host to view coverage reports in a browser."
+    echo ""
+fi

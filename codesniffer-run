@@ -18,6 +18,12 @@ Usage:
     n - Suppress warnings during the sniff run.
     x - Always exit zero regardless of sniff results.
 
+Environment:
+    CODESNIFFER_RUN_STANDARD - If set, overrides the name of the Coding
+                               Standard to use. The standard is assumed
+                               to be "installed" already.
+                               (Default: Loadsys)
+
 EOT
 
 	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
@@ -27,13 +33,13 @@ EOT
 # Set up local variables.
 umask a+rw
 
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-TMP_DIR="${DIR}/tmp"
+TMP_DIR="tmp"
 REPORT_DIR="${TMP_DIR}/code-sniffs"
 FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
-CODE_STANDARD="vendor/cakephp/cakephp-codesniffer/CakePHP,vendor/loadsys/loadsys_codesniffer/Loadsys"
+CODE_STANDARD=${CODESNIFFER_RUN_STANDARD:-Loadsys}
+CODE_STANDARDS=("vendor/cakephp/cakephp-codesniffer" "vendor/loadsys/loadsys_codesniffer")
 SNIFF_FOLDERS=("./src" "./plugins" "./tests" "./config" "./webroot")
 SNIFF_FAIL_CAUSES_SCRIPT_FAIL=0 # 0 = true. Script will exit with phpcs's return code.
 
@@ -67,7 +73,27 @@ while getopts ":fhnx" opt; do
 done
 
 
+# Make sure phpcs has the sniffs configured.
+INSTALLED_ALREADY=$( bin/phpcs --config-show | grep installed_paths )
+INSTALLED_ALREADY=${INSTALLED_ALREADY#installed_paths: }
+#echo "old = $INSTALLED_ALREADY"
+
+for STANDARD in "${CODE_STANDARDS[@]}"; do
+	if [[ ! $INSTALLED_ALREADY == *"$STANDARD"* ]]; then
+		TO_INSTALL="${TO_INSTALL-},${STANDARD}"
+	fi
+done
+
+TO_INSTALL=${TO_INSTALL#,}
+#echo "new = $TO_INSTALL"
+if [ -n "$TO_INSTALL" ] && [ "$TO_INSTALL" != "$INSTALLED_ALREADY" ]; then
+	echo "## Adding required coding standards installed paths."
+	bin/phpcs --config-set installed_paths $TO_INSTALL > /dev/null
+fi
+
+
 # Run the sniffs.
+echo "## Executing code sniffer:"
 bin/phpcs -ps $SUPPRESS_WARNINGS \
  --extensions=php \
  --standard="$CODE_STANDARD" \
