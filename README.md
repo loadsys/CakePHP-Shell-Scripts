@@ -55,7 +55,7 @@ Your project's `composer.json` file should include something like this:
 
 Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
 
-**Note**: The `bin-dir` is non-standard and may cause conflicts with other composer packages that install "binaries". These scripts are all expect to live in `PROJECT_ROOT/bin` though so don't expect anything to work if you forgo the `bin-dir` setting in your project.
+**Note**: The `bin-dir` is non-standard and may cause conflicts with other composer packages that install "binaries". The bundled scripts all expect to live in `PROJECT_ROOT/bin` though so don't expect anything to work if you forgo the `bin-dir` setting in your project.
 
 
 ## Contributing Improvements
@@ -127,7 +127,7 @@ Wraps the call to phpDocumentor so that it can be called from inside or outside 
 
 Intended to serve as a convenience method for executing phpunit since it's callable from your host machine and will execute tests inside of vagrant in that case.
 
-It can also take a partial filename as an argument and run the corresponding test case directly. This mode of uses is intended to be paired with a file watcher, like [kicker](https://github.com/alloy/kicker), [grunt](http://gruntjs.com/) or [efsw](https://bitbucket.org/SpartanJ/efsw). When a source file or its test case counterpart is changed, the tests for that single file can be executed.
+It can also take a partial filename as an argument and run the corresponding test case directly. This mode of use is intended to be paired with a file watcher, like [kicker](https://github.com/alloy/kicker), [grunt](http://gruntjs.com/) or [efsw](https://bitbucket.org/SpartanJ/efsw). When a source file or its test case counterpart is changed, the tests for that single file can be executed automatically inside the VM.
 
 
 ## License
