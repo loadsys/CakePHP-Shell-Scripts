@@ -9,7 +9,15 @@ ${0##*/}
     Uses the db-credentials script to start a command line mysql
     session with the correct host, database, user and password.
     Should be run from the project root folder. Passes all command
-    line arguments (except for \`-h\`) to mysql.
+    line arguments (except for \`--help\`) and I/O redirection to
+    mysql. This script can be used as a complete replacement for
+    the normal mysql command, without having to worry about
+    connection credentials.
+
+    Called without arguments, the command will log you into the
+    default database used by the CakePHP app. Using I/O redirection,
+    .sql files can be imported into that database as well:
+    \`bin/db-login < my-file.sql\`
 
 Usage:
     bin/${0##*/}
@@ -19,7 +27,7 @@ EOT
 
 	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
 }
-if [ "$1" = '-h' ]; then
+if [ "$1" = '--help' ]; then
 	usage
 fi
 
@@ -42,9 +50,9 @@ CMD="mysql --host=${DB_HOST} ${PORT_CLAUSE} --database=${DB_DATABASE} --user=${D
 
 # Handle all the different ways to provide (or not provide) a password.
 if [[ $DB_PASSWORD =~ " |'" ]]; then
-	$CMD -p"${DB_PASSWORD}" "$@"
+	$CMD -p"${DB_PASSWORD}" "$@" <&0
 elif [ -n "${DB_PASSWORD}" ]; then
-	$CMD -p$DB_PASSWORD "$@"
+	$CMD -p$DB_PASSWORD "$@" <&0
 else
-	$CMD "$@"
+	$CMD "$@" <&0
 fi
