@@ -20,8 +20,9 @@ The following dependencies are assumed to be available on the target system and 
 * `composer`
 * `git`
 * `mail`
+* `mysql`
 * `mysqldump`
-* `php`
+* `php` (v5.6 recommended)
 * `realpath` (not available by default on OS X)
 * `readlink`
 * `zip`
@@ -52,6 +53,7 @@ Your project's `composer.json` file should include something like this:
 	}
 }
 ```
+
 Then run `composer install` to pull this repo into your project. A `bin/` folder should be created in your project root with symlinks to all of the scripts from this package.
 
 **Note**: The `bin-dir` is non-standard and may cause conflicts with other composer packages that install "binaries". These scripts are all expect to live in `PROJECT_ROOT/bin` though so don't expect anything to work if you forgo the `bin-dir` setting in your project.
@@ -73,42 +75,67 @@ There currently is not a convenient way to set up a test harness around this rep
 ## Notable Scripts
 
 
-### bin/update
+### bin/cache-clear
 
-Automates all of the steps for a read-only copy of the app (such as staging or production) to pull new code from the repo and update the local running copy. It performs tasks like:
-
-* Checking the local working copy to make sure no changes have been made from the checked-out commit that might prevent an automatic pull or merge.
-* Backing up the active database (crudely, but effective for smallish apps).
-* On older projects, checking for db_updates.sql changes that should be applied before merging new code and pausing to display them to the user before proceeding.
-* Pulling and merging code from the remote repo.
-* Applying Migrations, if present.
-* Clearing Cake cache directories.
-* Copying over environment-specific configs, if present.
-* Updating git submodules.
-* Ensuring file ownership and write permissions are still correct.
-* Showing the user the new active commit's log.
+Uses the new `ConsoleShell` to iterate over all of the configured Caches in your app and clear each one.
 
 
-### bin/db-login
+### bin/codesniffer-run
 
-A simple shortcut script that uses the `[Datasources][default]` key defined in `config/app.php` to start a command line `mysql` session for you. Incredibly convenient in a production environment to run manual data queries during troubleshooting.
+Wraps the call to PHPCodeSniffer so that it can be called from inside or outside a Vagrant VM. Also checks the `installed_paths` configuration of phpcs and injects the necessary paths for the CakePHP and Loadsys coding standards if they are not already present.
+
+
+### bin/coverage-ensure
+
+Reads the location of the `clover.xml` file generated from your phpunit runs from your `phpunit.xml[.dist]` file, then examines that file for how much of your code is covered. Takes an integer command line argument representing the minimum required percentage, and returns with an exit status non-zero if your coverage is lacking. Intended for use during automated testing runs, such as on Travis.
 
 
 ### bin/db-backup
 
 Uses the default database credentials in `config/app.php` to create a ZIPed `mysqldump` of that database in a local `backups/` folder. Helpful because you don't have to specify DB credentials. It also reports the ZIP size to help you keep a mental tally over time.
 
+Can be used manually for one-off backups before dangerous operations (such as a code deploy and DB migrations), or automatically (such as in a Vagrant VM shutdown script, to preserve an internal DB and protect it from `vagrant destroy`.)
 
-### @TODO:
 
-Add cache-clear, tests-run, docs-generate, codesniffer-run here as notable scripts.
+### bin/db-login
+
+A simple shortcut script that uses the `[Datasources][default]` key defined in `config/app.php` to start a command line `mysql` session for you. Incredibly convenient in a production environment to run manual data queries during troubleshooting.
+
+Also properly handles I/O redirection, so any time you would normally run `mysql --user=user -ppass --host=host --port=3306 database_name < import.sql` you can instead just run `bin/db-login < import.sql` and never have to worry about the connection credentials. Great for scripting and provisioning.
+
+
+### bin/deploy
+
+Automates all of the steps for a read-only copy of the app (such as staging or production) to pull new code from the repo and update the local running copy. It performs tasks like:
+
+* Checking the local working copy to make sure no changes have been made from the checked-out commit that might prevent an automatic pull or merge.
+* Backing up the active database (crudely, but effective for smallish apps).
+* Pulling and merging code from the remote repo.
+* Applying Migrations, if present.
+* Clearing Cake cache directories.
+* Copying over environment-specific configs, if present.
+* Updating git submodules and/or composer dependencies.
+* Ensuring file ownership and write permissions are still correct.
+* Showing the user the new active commit's log and optionally generating a notification email.
+
+
+### bin/docs-generate
+
+Wraps the call to phpDocumentor so that it can be called from inside or outside a Vagrant VM but always executed inside.
+
+
+### bin/tests-run
+
+Intended to serve as a convenience method for executing phpunit since it's callable from your host machine and will execute tests inside of vagrant in that case.
+
+It can also take a partial filename as an argument and run the corresponding test case directly. This mode of uses is intended to be paired with a file watcher, like [kicker](https://github.com/alloy/kicker), [grunt](http://gruntjs.com/) or [efsw](https://bitbucket.org/SpartanJ/efsw). When a source file or its test case counterpart is changed, the tests for that single file can be executed.
 
 
 ## License
 
-MIT
+[MIT](LICENSE.md)
 
 
 ## Copyright
 
-Copyright 2015 Loadsys Web Strategies
+Copyright &copy; 2015 [Loadsys Web Strategies](http://loadsys.com)
