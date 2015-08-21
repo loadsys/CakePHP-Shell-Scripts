@@ -39,11 +39,9 @@ eval $( bin/db-credentials )
 if [ -n "${DB_PORT}" ]; then
 	PORT_CLAUSE="--port=${DB_PORT}"
 else
-	PORT_CLAUSE=""
-fi
 
 # Define the primary command line.
-CMD="mysql --host=${DB_HOST} ${PORT_CLAUSE} --database=${DB_DATABASE} --user=${DB_USERNAME}"
+CMD="mysql --host=${DB_HOST} ${PORT_CLAUSE-} --database=${DB_DATABASE} --user=${DB_USERNAME}"
 
 # Handle all the different ways to provide (or not provide) a password.
 if [[ $DB_PASSWORD =~ " |'" ]]; then

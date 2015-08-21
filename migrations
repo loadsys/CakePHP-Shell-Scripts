@@ -22,5 +22,4 @@ if [ "$1" = '-h' ]; then
 fi
 
 bin/cache-clear
-bin/cake Migrations.migration migrate
-bin/cache-clear
+bin/cake migrations migrate

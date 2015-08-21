@@ -27,8 +27,8 @@ fi
 COVERAGE_PATH="tmp/coverage/html"
 
 
-# Launch the coverage in a browser if requested and we're on the host.
-if command -v 'open' >/dev/null 2>&1; then
+# Launch the coverage in a browser if we're on the host.
+if command -v 'open' >/dev/null 2>&1 && command -v 'vagrant' >/dev/null 2>&1; then
     bin/vagrant-exec "bin/phpunit --coverage-html="$COVERAGE_PATH""
     open "${COVERAGE_PATH}/index.html"
 else
