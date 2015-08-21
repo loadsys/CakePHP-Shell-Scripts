@@ -24,19 +24,17 @@ if [ "$1" = '-h' ]; then
 fi
 
 
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-COVERAGE_PATH="tmp/coverage/html/"
+COVERAGE_PATH="tmp/coverage/html"
 
 
 # Launch the coverage in a browser if requested and we're on the host.
 if command -v 'open' >/dev/null 2>&1; then
-    bin/vagrant-exec "vendor/bin/phpunit --coverage-html="$COVERAGE_PATH""
-    open "${COVERAGE_PATH}index.html"
+    bin/vagrant-exec "bin/phpunit --coverage-html="$COVERAGE_PATH""
+    open "${COVERAGE_PATH}/index.html"
 else
-    cd "$DIR"
     bin/phpunit --coverage-html="$COVERAGE_PATH"
     echo ""
-    echo "## Run 'open ${COVERAGE_PATH}index.html'"
+    echo "## Run 'open ${COVERAGE_PATH}/index.html'"
     echo "## from your host to view coverage reports in a browser."
     echo ""
 fi

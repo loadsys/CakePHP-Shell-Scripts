@@ -34,10 +34,8 @@ fi
 
 
 # Set up working vars.
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-BIN_DIR="${DIR}/bin"
-COMPOSER_CONFIG_FILE="$DIR/composer.json"
-GUESSES=( "$( which composer )" "$BIN_DIR/composer" "$( which composer.phar )" "$BIN_DIR/composer.phar" )
+COMPOSER_CONFIG_FILE="composer.json"
+GUESSES=( "$( which composer )" "bin/composer" "$( which composer.phar )" "bin/composer.phar" )
 
 
 # Bail out if there's no config file present.

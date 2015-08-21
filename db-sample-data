@@ -16,6 +16,10 @@ ${0##*/}
 Usage:
     bin/${0##*/} [table] [table2] [table3]
 
+Environment:
+    DB_SAMPLE_DATA_URL - If this environment variable is set, it will
+                         be used when displaying the download URL for
+                         the temporary zip file.
 
 EOT
 
@@ -30,21 +34,18 @@ if [ -z "$1" ]; then
 else
 	TABLES="--tables "$*""
 fi
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-APP_DIR="$DIR"
-BIN_DIR="${DIR}/bin"
 
 
 # Configuration vars. Set these appropriately for your app and environment.
-PUBLIC_URL=""
-WEBROOT_PATH="$APP_DIR/webroot/"
+PUBLIC_URL=${DB_SAMPLE_DATA_URL:-}
+WEBROOT_PATH="webroot/"
 
 
 # Internal var setup.
-eval $( ${BIN_DIR}/db-credentials ) # Yuck, but nothing else works!
+eval $( bin/db-credentials ) # Yuck, but nothing else works!
 DATE=$(date +%Y-%m-%d)
 OPTIONS="--skip-add-drop-table --no-create-info"
-TMP_PATH="$APP_DIR/tmp/"
+TMP_PATH="tmp/"
 DESTINATION_NAME="${DB_NAME}_sample_data_${DATE}"
 
 # Generate the dump, compress it and move it into place.

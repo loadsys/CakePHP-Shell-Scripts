@@ -27,8 +27,7 @@ EOT
 # Set up local variables.
 umask a+rw
 
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-TMP_DIR="${DIR}/tmp"
+TMP_DIR="tmp"
 REPORT_DIR="${TMP_DIR}/code-sniffs"
 FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"

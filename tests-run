@@ -97,8 +97,6 @@ if (isset($argv[1]) && $argv[1] == '-h') {
 }
 
 // Set up variables.
-$dir = getcwd();
-
 array_shift($argv); // Strip the script name off and throw it away.
 $argc--; // Reindex argc so we can use it directly on remaining args.
 
@@ -113,9 +111,6 @@ if ($argc) {
 }
 
 $testCmd = "bin/vagrant-exec \"bin/phpunit{$args}\"";
-
-// Execute the commands.
-echo "## Clearing caches and executing tests.\n";
 
 //echo "## Running: `{$testCmd}`" . PHP_EOL;
 system($testCmd);

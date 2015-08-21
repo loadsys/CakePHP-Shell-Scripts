@@ -6,13 +6,11 @@ usage ()
 	cat <<EOT
 
 ${0##*/}
-    Convenience wrapper to run any pending Migrations. Takes an optional
-    Migrations COMMAND (defaults to "run all") and an optional plugin
-    for which to execute migrations. Should be run from the project
-    root folder.
+    Convenience wrapper to run any pending Migrations. Should be
+    run from the project root folder.
 
 Usage:
-    bin/${0##*/} [command] [plugin]
+    bin/${0##*/}
 
 
 EOT
@@ -23,29 +21,6 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
-
-
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-
-if [ "$1" ]; then
-	OPTION=$1;
-else
-	OPTION="run all";
-fi
-
-if [ "$2" ]; then
-	PLUGIN=$2;
-else
-	PLUGIN="app"
-fi
-
-
-if [ $PLUGIN == "app" ]; then
-	PLUGIN=""
-else
-	PLUGIN="-p $PLUGIN"
-fi
-
-$DIR/bin/cache-clear
-$DIR/bin/cake Migrations.migration $OPTION $PLUGIN
-$DIR/bin/cache-clear
+bin/cache-clear
+bin/cake Migrations.migration migrate
+bin/cache-clear
