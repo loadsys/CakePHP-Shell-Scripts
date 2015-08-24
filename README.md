@@ -1,5 +1,9 @@
 # Loadsys Cake Command Line Scripts
 
+[![Packagist Version](https://img.shields.io/packagist/v/loadsys/cakephp-shell-scripts.svg?style=flat-square)](https://packagist.org/packages/loadsys/cakephp-shell-scripts)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/loadsys/cakephp-shell-scripts.svg?style=flat-square)](https://packagist.org/packages/loadsys/cakephp-shell-scripts)
+
 This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below. Coordinates heavily with the [Loadsys CakePHP App Skeleton](https://github.com/loadsys/CakePHP-Skeleton).
 
 * This is the `master` branch and along with the `3.x.x` releases is meant for use with Cake 3 projects exclusively.
