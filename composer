@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# beporter@users.sourceforge.net
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Wrapper around composer to make it "aware" of a custom
+    \`COMPOSER_NODEV\` environment variable. If that variable is set
+    when this script is executed, the `--no-dev` flag will be prepended
+    to the command line arguments. All arguments to this script are
+    passed directly through to composer, except for -h which displays
+    this wrapper script's help text. (Use \`--help\` to get composer's
+    help.)
+
+    For this script to work effectively, you should be in the habit of
+    calling \`composer\` (without the ".phar" and with the file available
+    in your PATH already.)
+
+    This version of the script is "insidious" in that it will install
+    itself in place of an existing composer binary. It's also capable of
+    installing the real composer for you if it isn't already available,
+    making it a drop-in replacement for the regular composer install
+    instructions. Is this dangerous? Yup, it sure is. Should you trust
+    this script? Probably not. To understand why it exists, see:
+    https://github.com/composer/composer/issues/4408
+
+    To install composer and this wrapper, execute the following
+    EXTREMELY DANGEROUS command from your system's command line:
+
+    $ curl -sS https://raw.githubusercontent.com/loadsys/CakePHP-Shell-Scripts/master/composer > composer && bash composer >/dev/null
+
+    NOTE: You may need to use \`sudo bash composer\` in the above command.
+
+Usage:
+    ${0##*/} [options] [arguments]
+
+
+EOT
+
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+COMPOSER_DEFAULT_PATH="/usr/local/bin/composer"
+
+# If there's already a `composer` in PATH, make sure it isn't already
+# THIS wrapper, and replace it with this wrapper.
+COMPOSER_WRAPPER="$(which composer)"
+if [ -n "$COMPOSER_WRAPPER" ] && ! grep -q "COMPOSER_WRAPPER" "$COMPOSER_WRAPPER"; then
+	echo "Replacing existing $COMPOSER_WRAPPER with wrapper script $0" >&2
+	mv "$COMPOSER_WRAPPER" "${COMPOSER_WRAPPER}.phar"
+	mv "$0" "${COMPOSER_WRAPPER}"
+	chmod a+x "${COMPOSER_WRAPPER}"
+elif [ -z "$COMPOSER_WRAPPER" ]; then
+	COMPOSER_WRAPPER="$COMPOSER_DEFAULT_PATH"
+	echo "Installing composer wrapper script as ${COMPOSER_WRAPPER}" >&2
+	mv "$0" "${COMPOSER_WRAPPER}"
+	chmod a+x "${COMPOSER_WRAPPER}"
+fi
+
+# If there isn't already a composer.phar executable, download and install it.
+COMPOSER_BINARY="$(which composer.phar)"
+if [ -z "$COMPOSER_BINARY" ]; then
+	COMPOSER_BINARY="${COMPOSER_WRAPPER}.phar"
+	echo "composer.phar not found in PATH. Installing as $COMPOSER_BINARY" >&2
+	curl -sS https://getcomposer.org/installer | \
+		php -- --install-dir=${COMPOSER_BINARY%/*} --filename=${COMPOSER_BINARY##*/}
+fi
+
+# Execute the "real" composer with all args and all piped/redirected input.
+"$COMPOSER_BINARY" ${COMPOSER_NODEV+"--no-dev"} "$@" <&0
