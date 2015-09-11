@@ -59,9 +59,39 @@ fi
 
 
 # main()
-echo "## Installing git."
-sudo apt-get -y update
-sudo apt-get -y install git-core build-essential
+
+if [ -z "$(which git)" ]; then
+	echo "## Installing git."
+	sudo apt-get -y update
+	sudo apt-get -y install git-core build-essential
+elif git --version 2>&1 >/dev/null | grep -q 'xcode-select'; then
+	echo "## Triggering Xcode Command Line Tools installation. Either complete"
+	echo "## that process or install git into your PATH yourself, then press"
+	echo "## [ENTER] to continue."
+	read WAIT_FOR_INSTALL_TO_FINISH
+	if [ ! -x /Library/Developer/CommandLineTools/usr/bin/git ]; then
+		echo "!! Git installation appears to have failed."
+		echo "!! Please manually install and retry. Aborting."
+		exit 5
+	fi
+else
+	echo "## Git appears to already be installed."
+fi
+
+# Alternative fully automated approach:
+# Ref: https://apple.stackexchange.com/a/121044/17403
+#
+# xcode-select --install
+# sleep 1
+# osascript <<EOD
+#   tell application "System Events"
+#     tell process "Install Command Line Developer Tools"
+#       keystroke return
+#       click button "Agree" of window "License Agreement"
+#     end tell
+#   end tell
+# EOD
+
 
 echo "## Cloning repo."
 git clone -b $GIT_BRANCH $REPO_CLONE_URL repo
@@ -73,7 +103,7 @@ cd "${INSTALL_DIR}"
 
 if [ ! -x "${BOOTSTRAP_SCRIPT}" ] ; then
 	echo "!! Bootstrap script is not present. Exiting."
-	exit 5
+	exit 6
 fi
 
 echo "## Executing bootstrap script."
