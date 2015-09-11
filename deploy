@@ -131,10 +131,6 @@ if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
 	$BIN_DIR/migrations
 fi
 
-# Copy the correct config files into place for this environment.
-$BIN_DIR/set-configs $ARG_APPENV
-
-
 # Make sure any external packages are installed and available.
 composer install --no-interaction
 
