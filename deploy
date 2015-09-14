@@ -73,6 +73,9 @@ else
 fi
 
 
+#@TODO: Maybe check for an executable `scripts/pre-deploy` project-specific script and run it? Abort this script if the pre-deploy exists non-zero?
+
+
 # Check for local changes that would cause a merge (without -f) to fail later.
 $BIN_DIR/git-localchanges
 if [ $? -gt 0 ]; then
@@ -111,7 +114,8 @@ elif [ "$DB_UPDATES_METHOD" = 'none' ]; then
 fi
 
 
-# This if case should really be looking to see if we're being asked to fast forward on the same branch, or switch to the HEAD of a different branch.
+# This if() should really be looking to see if we're being asked to fast
+# forward on the same branch, or switch to the HEAD of a different branch.
 # if [ "$ARG_NEWCOMMIT" = "origin/master" ]; then
 	echo "## Merging upstream changes from: $ARG_NEWCOMMIT";
 	git merge $ARG_NEWCOMMIT
@@ -132,6 +136,8 @@ if [ "$DB_UPDATES_METHOD" = 'migrations' ]; then
 fi
 
 # Make sure any external packages are installed and available.
+# The current environment can export a COMPOSER_NODEV flag to disable
+# the installation of require-dev dependencies.
 composer install --no-interaction
 
 
@@ -158,6 +164,9 @@ if [ -n "${LOADSYS_EMAIL}" ]; then
 	bin/email "${LOADSYS_EMAIL}" "${LOADSYS_PROJECT_NAME}: Code push complete" "${MSG_BODY}"
 	rm -f "${MSG_BODY}"
 fi
+
+
+#@TODO: Maybe check for an executable `scripts/post-deploy` project-specific script and run it?
 
 
 echo "## Update process complete.";
