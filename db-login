@@ -38,7 +38,7 @@ eval $( bin/db-credentials )
 # Set a custom port, if provided to us.
 if [ -n "${DB_PORT}" ]; then
 	PORT_CLAUSE="--port=${DB_PORT}"
-else
+fi
 
 # Define the primary command line.
 CMD="mysql --host=${DB_HOST} ${PORT_CLAUSE-} --database=${DB_DATABASE} --user=${DB_USERNAME}"
