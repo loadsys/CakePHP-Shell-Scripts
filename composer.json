@@ -21,6 +21,7 @@
         "cache-clear",
         "codesniffer-run",
         "composer-install",
+        "composer-reinstall",
         "coverage-ensure",
         "coverage-report",
         "db-backup",
