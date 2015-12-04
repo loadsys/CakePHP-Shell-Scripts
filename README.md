@@ -4,8 +4,9 @@
 
 This collection of scripts is intended to provide consistency and shortcuts for common project tasks. Key tools are highlighted and described below.
 
-* The 1.x branch is tuned for projects that primarily use git submodules for dependency management.
-* The 2.x branch is meant for projects that use composer (although submodules are still supported).
+* The master branch and 3.x.x release series is intended for use with Cake 3.x projects and is the only branch that is actively maintained.
+* The cake-2.x branch and 2.x.x release series is meant for CakePHP 2.x projects that use composer.
+* The 1.x release series is tuned for CakePHP 1.3 projects that primarily use git submodules for dependency management.
 * Most scripts listed below can take a `-h` option as their first argument to output usage information.
 * Most are designed to run with few or no arguments; they try to guess sensible defaults whenever possible.
 * Most are designed to fail gracefully. For example, if `pear` is available and your project defines a pear config file, then those dependencies will be installed by `deps-install`, otherwise pear will be silently ignored. This provides maximum flexibility without having to customize the scripts per-project.
