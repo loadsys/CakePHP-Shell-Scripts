@@ -11,18 +11,25 @@ ${0##*/}
     to the standard output.
 
 Usage:
-    bin/${0##*/} [-f|h|n|x]
+    bin/${0##*/} [-f|h|n|x] [-r StndName]|[-r rules.xml] [dirs|files to sniff]
 
     f - Write full and summary report out to files.
     h - Print this help information.
     n - Suppress warnings during the sniff run.
     x - Always exit zero regardless of sniff results.
 
+    r - Use an explicit ruleset.xml file path or coding standard name.
+
 Environment:
     CODESNIFFER_RUN_STANDARD - If set, overrides the name of the Coding
                                Standard to use. The standard is assumed
-                               to be "installed" already.
-                               (Default: Loadsys)
+                               to be "installed" already. The default
+                               standard (and this env var) can also be
+                               overriden using the -r option to
+                               explicitly name a ruleset.xml file or
+                               coding standard name.
+                               (Default: phpcs.xml if present, otherwise
+                               'Loadsys')
 
 EOT
 
@@ -39,8 +46,11 @@ FULL_REPORT_FILE="${REPORT_DIR}/report-full.txt"
 SUMMARY_REPORT_FILE="${REPORT_DIR}/report-summary.txt"
 
 CODE_STANDARD=${CODESNIFFER_RUN_STANDARD:-Loadsys}
+if [ -r "phpcs.xml" ]; then
+	CODE_STANDARD="phpcs.xml"
+fi
 CODE_STANDARDS=("vendor/cakephp/cakephp-codesniffer" "vendor/loadsys/loadsys_codesniffer")
-SNIFF_FOLDERS=("./src" "./plugins" "./tests" "./config" "./webroot")
+SNIFF_FOLDERS=("./src" "./tests" "./config" "./webroot" "./plugins")
 SNIFF_FAIL_CAUSES_SCRIPT_FAIL=0 # 0 = true. Script will exit with phpcs's return code.
 
 SAVE_REPORTS=1  # 1 = false. DON'T save reports when no args provided.
@@ -49,7 +59,7 @@ SUPPRESS_WARNINGS=""
 
 
 # Process command line options.
-while getopts ":fhnx" opt; do
+while getopts ":fhnr:x" opt; do
 	case $opt in
 		f)
 			SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
@@ -62,6 +72,9 @@ while getopts ":fhnx" opt; do
 		n)
 			SUPPRESS_WARNINGS="-n"
 			;;
+		r)
+			CODE_STANDARD="$OPTARG"
+			;;
 		x)
 			SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. Always exit 0;
 			;;
@@ -73,10 +86,16 @@ while getopts ":fhnx" opt; do
 done
 
 
+# Override the files/folders to sniff if any args are left.
+shift $(expr $OPTIND - 1 )
+if [ $# -gt 0 ]; then
+	SNIFF_FOLDERS=("$@")
+fi
+
+
 # Make sure phpcs has the sniffs configured.
 INSTALLED_ALREADY=$( bin/phpcs --config-show | grep installed_paths )
 INSTALLED_ALREADY=${INSTALLED_ALREADY#installed_paths: }
-#echo "old = $INSTALLED_ALREADY"
 
 for STANDARD in "${CODE_STANDARDS[@]}"; do
 	if [[ ! $INSTALLED_ALREADY == *"$STANDARD"* ]]; then
@@ -85,7 +104,6 @@ for STANDARD in "${CODE_STANDARDS[@]}"; do
 done
 
 TO_INSTALL=${TO_INSTALL#,}
-#echo "new = $TO_INSTALL"
 if [ -n "$TO_INSTALL" ] && [ "$TO_INSTALL" != "$INSTALLED_ALREADY" ]; then
 	echo "## Adding required coding standards installed paths."
 	bin/phpcs --config-set installed_paths $TO_INSTALL > /dev/null
