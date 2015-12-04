@@ -54,11 +54,11 @@ echo "## Found composer at: ${COMPOSER}"
 COMPOSER_VENDOR_DIR="$($COMPOSER config --absolute vendor-dir)"
 COMPOSER_BIN_DIR="$($COMPOSER config --absolute bin-dir)"
 
-# Purge the vendor folder entirely and just symlinks from the bin folder.
-echo "## Deleting vendor-dir: ${COMPOSER_VENDOR_DIR}"
-rm -rf "$COMPOSER_VENDOR_DIR"
+# Purge the symlinks from the bin folder first then clear the vendor folder entirely.
 echo "## Removing bin-dir symlinks from: ${COMPOSER_BIN_DIR}"
 find "$COMPOSER_BIN_DIR" -type l -delete;
+echo "## Deleting vendor-dir: ${COMPOSER_VENDOR_DIR}"
+rm -rf "$COMPOSER_VENDOR_DIR"
 
 # Execute `composer install`
 echo "## Running install."
