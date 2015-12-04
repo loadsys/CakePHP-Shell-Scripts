@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Purges composer's configured \`vendor-dir\` and any symlinks
+    from the \`bin-dir\`, then runs \`composer install\`. Designed
+    to help in development when composer dependencies "get weird"
+    and need to be forcibly reset.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Set up working vars.
+COMPOSER_CONFIG_FILE="composer.json"
+GUESSES=( "$(which composer)" "bin/composer" "$(which composer.phar)" "bin/composer.phar" )
+
+
+# Bail out if there's no config file present.
+if [ ! -e "$COMPOSER_CONFIG_FILE" ]; then
+	echo "!! No composer config file at '$COMPOSER_CONFIG_FILE'."
+	exit 2
+fi
+echo "## Found composer config at: ${COMPOSER_CONFIG_FILE}"
+
+
+# Bail out if composer isn't available to us.
+for GUESS in "$GUESSES"; do
+	if [ -x "$GUESS" ]; then
+		COMPOSER="$GUESS"
+		break
+	fi
+done
+if [ -z "$COMPOSER" ]; then
+	echo "!! The 'composer' command was not found on this system."
+	echo ""
+	exit 1
+fi
+echo "## Found composer at: ${COMPOSER}"
+
+COMPOSER_VENDOR_DIR="$($COMPOSER config --absolute vendor-dir)"
+COMPOSER_BIN_DIR="$($COMPOSER config --absolute bin-dir)"
+
+# Purge the vendor folder entirely and just symlinks from the bin folder.
+echo "## Deleting vendor-dir: ${COMPOSER_VENDOR_DIR}"
+rm -rf "$COMPOSER_VENDOR_DIR"
+echo "## Removing bin-dir symlinks from: ${COMPOSER_BIN_DIR}"
+find "$COMPOSER_BIN_DIR" -type l -delete;
+
+# Execute `composer install`
+echo "## Running install."
+"$COMPOSER" install --quiet --no-interaction --ignore-platform-reqs --optimize-autoloader "$@"
