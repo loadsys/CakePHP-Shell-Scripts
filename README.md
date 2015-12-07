@@ -21,6 +21,7 @@ The following dependencies are assumed to be available on the target system and 
 
 * `bash`
 * `composer`
+* `curl`
 * `git`
 * `mail`
 * `mysql`

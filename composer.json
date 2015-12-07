@@ -30,6 +30,7 @@
         "db-sample-data",
         "deploy",
         "docs-generate",
+        "docs-post",
         "email",
         "folder-delete-items-older-than-days",
         "git-currentbranch",
