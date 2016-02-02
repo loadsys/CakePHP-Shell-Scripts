@@ -62,7 +62,7 @@ SUPPRESS_WARNINGS=""
 
 
 # Process command line options.
-while getopts ":fhnrs:x" opt; do
+while getopts ":fhnr:sx" opt; do
 	case $opt in
 		f)
 			SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
