@@ -11,11 +11,13 @@ ${0##*/}
     to the standard output.
 
 Usage:
-    bin/${0##*/} [-f|h|n|x] [-r StndName]|[-r rules.xml] [dirs|files to sniff]
+    bin/${0##*/} [-f|h|n|s|x] [-r StndName]|[-r rules.xml] [dirs|files to sniff]
 
     f - Write full and summary report out to files.
     h - Print this help information.
     n - Suppress warnings during the sniff run.
+    s - Strict mode. Reduces the threshold for WARNINGS, making them
+        visible for review.
     x - Always exit zero regardless of sniff results.
 
     r - Use an explicit ruleset.xml file path or coding standard name.
@@ -55,11 +57,12 @@ SNIFF_FAIL_CAUSES_SCRIPT_FAIL=0 # 0 = true. Script will exit with phpcs's return
 
 SAVE_REPORTS=1  # 1 = false. DON'T save reports when no args provided.
 COVERAGE="--report-full --report-summary"
+STRICT_MODE=""
 SUPPRESS_WARNINGS=""
 
 
 # Process command line options.
-while getopts ":fhnr:x" opt; do
+while getopts ":fhnrs:x" opt; do
 	case $opt in
 		f)
 			SAVE_REPORTS=0  # 0 = true. Save reports to files, not print to screen.
@@ -74,6 +77,9 @@ while getopts ":fhnr:x" opt; do
 			;;
 		r)
 			CODE_STANDARD="$OPTARG"
+			;;
+		s)
+			STRICT_MODE="--warning-severity=1"
 			;;
 		x)
 			SNIFF_FAIL_CAUSES_SCRIPT_FAIL=1 # 1 = false. Always exit 0;
@@ -112,7 +118,8 @@ fi
 
 # Run the sniffs.
 echo "## Executing code sniffer:"
-bin/phpcs -ps $SUPPRESS_WARNINGS \
+bin/phpcs -ps $SUPPRESS_WARNINGS $STRICT_MODE \
+ --colors \
  --extensions=php \
  --standard="$CODE_STANDARD" \
  ${COVERAGE} \
