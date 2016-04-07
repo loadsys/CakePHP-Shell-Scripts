@@ -13,7 +13,8 @@
         "phpdocumentor/phpdocumentor": "~2.0",
         "psy/psysh": "@stable",
         "loadsys/loadsys_codesniffer": "~3.0",
-        "nikic/php-parser": "~0.9"
+        "nikic/php-parser": "~0.9",
+        "phpmetrics/phpmetrics": "^1.10"
     },
     "config": {
         "bin-dir": "bin"
