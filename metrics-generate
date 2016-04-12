@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+#---------------------------------------------------------------------
+usage ()
+{
+	cat <<EOT
+
+${0##*/}
+    Wraps up the call to the PHPMetrics library for standard Cake
+    project folder layouts. Writes reports into the tmp/metrics/
+    folder.
+
+    Should be run from the project root folder.
+
+Usage:
+    bin/${0##*/}
+
+
+EOT
+
+	exit ${1:-0}  # Exit with code 0 unless an arg is passed to the method.
+}
+if [ "$1" = '-h' ]; then
+	usage
+fi
+
+
+# Set up local variables.
+umask a+rw
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+TMP_DIR="tmp"
+REPORT_DIR="${TMP_DIR}/metrics"
+REPORT_FILE="${REPORT_DIR}/index.html"
+TARGET_FOLDERS=("./src")
+
+if [ $# -gt 0 ]; then
+	TARGET_FOLDERS=("$@")
+fi
+
+
+echo "## Generating metrics report.";
+bin/phpmetrics \
+ --report-html="$REPORT_FILE" \
+ ${TARGET_FOLDERS[@]}
