@@ -102,7 +102,7 @@ echo "## Current commit is $EXISTINGBRANCH ($EXISTINGCOMMIT)";
 
 # Update repository.
 echo "## Pulling changes from remote repo.";
-git fetch origin refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
+git fetch origin --prune refs/heads/*:refs/remotes/origin/* +refs/tags/*:refs/tags/*
 
 
 # Apply database updates, one way or another.
@@ -118,7 +118,7 @@ fi
 # forward on the same branch, or switch to the HEAD of a different branch.
 # if [ "$ARG_NEWCOMMIT" = "origin/master" ]; then
 	echo "## Merging upstream changes from: $ARG_NEWCOMMIT";
-	git merge $ARG_NEWCOMMIT
+	git merge --ff-only $ARG_NEWCOMMIT
 # else
 # 	echo "## Checking out new commit: $ARG_NEWCOMMIT";
 # 	git checkout $ARG_NEWCOMMIT

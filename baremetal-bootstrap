@@ -15,7 +15,7 @@ ${0##*/}
 Usage:
 	From the machine to be provisioned:
 
-	curl https://raw.githubusercontent.com/loadsys/CakePHP-Shell-Scripts/master/${0##*/} | bash -s -- <REPO_CLONE_URL> <GIT_BRANCH> <APP_ENV_VALUE>
+	curl -sS https://raw.githubusercontent.com/loadsys/CakePHP-Shell-Scripts/master/baremetal-bootstrap | bash -s -- <REPO_CLONE_URL> <GIT_BRANCH> <APP_ENV_VALUE>
 
 	Should be run as the user the app will run as on the target server.
 
@@ -91,6 +91,19 @@ fi
 #     end tell
 #   end tell
 # EOD
+
+
+if [ -n "$(which git-lfs)" ]; then
+	echo "## Git-LFS support appears to already be installed."
+elif [ -n "$(which brew)" ]; then
+	echo "## Installing git-lfs support using Homebrew."
+	brew install git-lfs
+	git lfs install
+elif [ -n "$(which port)" ]; then
+	echo "## Installing git-lfs support using MacPorts."
+	sudo port install git-lfs
+	git lfs install
+fi
 
 
 echo "## Cloning repo."

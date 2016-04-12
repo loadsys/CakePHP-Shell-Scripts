@@ -99,15 +99,13 @@ if (isset($argv[1]) && $argv[1] == '-h') {
 // Set up variables.
 array_shift($argv); // Strip the script name off and throw it away.
 $argc--; // Reindex argc so we can use it directly on remaining args.
+$args = '';
 
 if ($argc) {
 	$args = array_map('Loadsys\CakePHPShellScripts\TestsRun\findTestCase', $argv);
 	$args = array_map('escapeshellarg', $args);
 	$args = implode(' ', $args);
-// 	$args = '"' . $args . '"';
 	$args = ' ' . $args;
-} else {
-	$args = '';
 }
 
 $testCmd = "bin/vagrant-exec \"bin/phpunit{$args}\"";
