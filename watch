@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Wrapper around `fswatch` to pass changed files into `bin/tests-run`.
+
+#@TODO: Bail if fswatch is not available. (add to readme as a dep.)
+
+echo "## Test watcher running. Save a file to execute the corresponding test in vagrant."
+
+fswatch -0 src/ tests/ | xargs -0 -n 1 -I {} sh -c 'echo " - {}"; bin/tests-run "{}"'
+
+#@TODO: Use a custom phpunit.xml that does not produce TWO coverage reports by default.
+
+#@TODO: Suppress tests/bootstrap.php from clearing caches? (reduce output "noise")
