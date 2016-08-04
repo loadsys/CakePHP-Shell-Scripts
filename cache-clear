@@ -28,11 +28,4 @@ fi
 
 echo "## Clearing cache folders.";
 
-cat <<-'EOPHP' | bin/cake console -q | head -n -1
-	foreach (\Cake\Cache\Cache::configured() as $key) {
-		\Cake\Cache\Cache::clear(false, $key);
-		echo "  - Cleared: $key\n";
-	}
-	exit;
-
-EOPHP
+bin/cake cache clear_all
