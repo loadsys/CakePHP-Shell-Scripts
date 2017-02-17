@@ -29,3 +29,8 @@ fi
 echo "## Clearing cache folders.";
 
 bin/cake cache clear_all
+
+echo "## Removing DebugKit SQLite file.";
+
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
+rm $DIR/tmp/debug_kit.sqlite
