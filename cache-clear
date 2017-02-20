@@ -25,12 +25,12 @@ if [ "$1" = '-h' ]; then
 	usage
 fi
 
+DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
 echo "## Clearing cache folders.";
-
 bin/cake cache clear_all
 
-echo "## Removing DebugKit SQLite file.";
-
-DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
-rm $DIR/tmp/debug_kit.sqlite
+if [ -e "$DIR/tmp/debug_kit.sqlite" ]; then
+	echo "## Removing DebugKit SQLite file.";
+	rm $DIR/tmp/debug_kit.sqlite
+fi
