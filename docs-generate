@@ -25,4 +25,11 @@ fi
 
 DIR="$( cd -P "$( dirname "$0" )"/.. >/dev/null 2>&1 && pwd )"
 
-bin/vagrant-exec "bin/phpdoc "$@""
+# If phpdoc bin script installed use that
+if [ -e "bin/phpdoc" ]; then
+	bin/vagrant-exec "bin/phpdoc "$@""
+elif [ -e "bin/phpdoc.php" ]; then
+	bin/vagrant-exec "bin/phpdoc.php "$@""
+else
+	echo "!! Unable to locate the 'phpdoc' bin command. !!"
+fi
