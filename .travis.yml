@@ -1,0 +1,41 @@
+language: php
+
+sudo: false
+
+php:
+    - 5.6
+    - 7.0
+    - 7.1
+
+# Environment Variables to set
+env:
+    global:
+
+
+# Cache the composer directories, only allowed if using the container based setup
+# which depends on setting sudo to false
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+# Branches to be built or not
+branches:
+    # Blacklist these branches
+    except:
+        - gh-pages
+
+before_install:
+    - composer self-update
+
+install:
+    - composer install --no-interaction
+
+before_script:
+
+script:
+    - bin/phpunit --version
+
+after_script:
+
+notifications:
+    email: false
