@@ -1,0 +1,17 @@
+; This file is for unifying the coding style for different editors and IDEs.
+; More information at http://editorconfig.org
+
+; This file is to be considered the "top most" for this project.
+root = true
+
+; Unix style newlines and a final newline for all files.
+[*]
+indent_style = tab
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+; Matches the exact files package.json and .travis.yml
+[{package.json,.travis.yml,composer.json,*.yaml,*.yml}]
+indent_style = space
+indent_size = 2
