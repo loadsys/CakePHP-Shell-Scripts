@@ -31,7 +31,7 @@ The following dependencies are assumed to be available on the target system and 
 * `readlink`
 * `zip`
 
-Additionally, some scripts expect additional tools that should be automatically installed as composer dependencies to _this_ package:
+Additionally, some scripts expect additional tools that should be installed as composer dependencies in **your project:**
 
 * `bin/phpcs`
 * `bin/phpunit`
@@ -39,6 +39,8 @@ Additionally, some scripts expect additional tools that should be automatically 
 * `bin/cake` (composer-installed **by target project**)
 
 If these items are not available, some scripts may not function as expected.
+
+**IMPORTANT NOTE:** Previous versions of _this_ package automatically installed `CakePHP`, `PHP_CodeSniffer`, `PHPUnit`, `phpDocumentor`, `PHP-Parser`, and `PHPMetrics` via composer. These tools should now be added to your project's `composer.json` as specified below.
 
 
 ## Installation
@@ -50,7 +52,13 @@ Your project's `composer.json` file should include something like this:
 ```json
 {
 	"require": {
-		"loadsys/cakephp-shell-scripts": "~3.0"
+		"loadsys/cakephp-shell-scripts": "~3.0",
+		"cakephp/cakephp": "~3.3",
+		"phpunit/phpunit": "~4.1",
+		"phpdocumentor/phpdocumentor": "~2.0",
+		"loadsys/loadsys_codesniffer": "~3.0",
+		"nikic/php-parser": "~0.9",
+		"phpmetrics/phpmetrics": "^1.10"
 	},
 	"config": {
 		"bin-dir": "bin"
